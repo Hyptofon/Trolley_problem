@@ -1,0 +1,15 @@
+# Cloudflare Pages Functions local environment variables (.dev.vars)
+# Copy this file to .dev.vars for local testing with `npm run dev:full` or `wrangler pages dev`
+
+# 1. URL розгорнутого Google Apps Script Web App (або mock://localhost для тестування)
+APPS_SCRIPT_URL=https://script.google.com/macros/s/AKfycb.../exec
+
+# 2. Спільний секрет для автентифікації запитів між Cloudflare та Apps Script
+APPS_SCRIPT_SHARED_SECRET=replace-with-a-random-shared-secret-key-32-chars
+
+# 3. Надійний пароль для входу адміністратора в /admin
+ADMIN_PASSWORD=replace-with-a-strong-admin-password-16-chars-min
+
+# 4. Секретний ключ для HMAC-SHA256 підпису сесійних cookies адміністратора
+ADMIN_SESSION_SECRET=replace-with-a-random-hmac-session-signing-secret-key-32-chars
+
