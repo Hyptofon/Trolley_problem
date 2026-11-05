@@ -69,6 +69,9 @@ describe('Google Apps Script Logic Tests', () => {
       PropertiesService: {
         getScriptProperties: () => ({
           getProperty: (key: string) => mockProperties[key] || null,
+          setProperty: (key: string, val: string) => {
+            mockProperties[key] = val;
+          },
         }),
       },
       LockService: {
@@ -101,6 +104,9 @@ describe('Google Apps Script Logic Tests', () => {
         log: vi.fn(),
       },
       SpreadsheetApp: {
+        getActiveSpreadsheet: () => ({
+          getId: () => mockProperties['SPREADSHEET_ID'] || 'mock-sheet-id-12345',
+        }),
         openById: (_id: string) => ({
           getSheetByName: (name: string) => {
             if (name === 'Votes') return mockSheet;

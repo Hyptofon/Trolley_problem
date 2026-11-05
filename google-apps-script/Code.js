@@ -10,14 +10,45 @@ const SHEET_NAME = 'Votes';
 const LOCK_TIMEOUT_MS = 25000;
 
 /**
+ * Отримує або автоматично визначає ID таблиці.
+ * Якщо скрипт відкрито через "Розширення -> Apps Script", він автоматично
+ * визначає активну таблицю та зберігає її ID у Script Properties.
+ */
+function getOrDetectSpreadsheetId() {
+  const properties = PropertiesService.getScriptProperties();
+  let id = properties.getProperty('SPREADSHEET_ID');
+
+  if (!id) {
+    try {
+      if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getActiveSpreadsheet) {
+        const active = SpreadsheetApp.getActiveSpreadsheet();
+        if (active && active.getId) {
+          id = active.getId();
+          if (id) {
+            properties.setProperty('SPREADSHEET_ID', id);
+            Logger.log('Автоматично визначено та збережено SPREADSHEET_ID: ' + id);
+          }
+        }
+      }
+    } catch (_e) {
+      // Ігноруємо, якщо скрипт автономний і немає активної таблиці
+    }
+  }
+
+  return id;
+}
+
+/**
  * Ініціалізація структури таблиці. Запустіть один раз з редактора Apps Script.
  */
 function setup() {
-  const properties = PropertiesService.getScriptProperties();
-  const spreadsheetId = properties.getProperty('SPREADSHEET_ID');
+  const spreadsheetId = getOrDetectSpreadsheetId();
 
   if (!spreadsheetId) {
-    throw new Error('Script Property "SPREADSHEET_ID" не встановлено!');
+    throw new Error(
+      'Script Property "SPREADSHEET_ID" не встановлено та не вдалося визначити активну таблицю! ' +
+      'Перевірте Project Settings -> Script Properties -> SPREADSHEET_ID.'
+    );
   }
 
   const ss = SpreadsheetApp.openById(spreadsheetId);
@@ -80,14 +111,14 @@ function doPost(e) {
 
     const properties = PropertiesService.getScriptProperties();
     const expectedSecret = properties.getProperty('SHARED_SECRET');
-    const spreadsheetId = properties.getProperty('SPREADSHEET_ID');
+    const spreadsheetId = properties.getProperty('SPREADSHEET_ID') || getOrDetectSpreadsheetId();
 
     if (!expectedSecret || !spreadsheetId) {
       return createJsonResponse(
         {
           error: {
             code: 'SERVER_MISCONFIGURED',
-            message: 'Script Properties не налаштовано на стороні Google Apps Script.',
+            message: 'Script Properties не налаштовано на стороні Google Apps Script (відсутній SHARED_SECRET або SPREADSHEET_ID).',
           },
         },
         500
