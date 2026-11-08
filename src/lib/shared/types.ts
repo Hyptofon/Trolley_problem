@@ -64,3 +64,4 @@ export interface StoredVote {
   status: VoteStatus;
   timestamp: string;
 }
+

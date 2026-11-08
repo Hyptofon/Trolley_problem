@@ -40,3 +40,4 @@ export function calculateStats(raw: RawVoteCounts): AdminStatsResponse {
     updatedAt: raw.updatedAt || new Date().toISOString(),
   };
 }
+

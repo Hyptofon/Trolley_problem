@@ -182,3 +182,4 @@ describe('Vote Route Handlers Integration (/api/vote & /api/vote/status)', () =>
     });
   });
 });
+

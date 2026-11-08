@@ -48,3 +48,4 @@ export async function POST() {
     { status: 405, headers: { Allow: 'GET' } }
   );
 }
+

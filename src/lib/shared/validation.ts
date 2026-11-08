@@ -28,3 +28,4 @@ export const adminLoginRequestSchema = z.object({
     .min(1, { message: 'Пароль не може бути порожнім' })
     .max(256, { message: 'Пароль занадто довгий' }),
 });
+

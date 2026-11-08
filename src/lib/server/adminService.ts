@@ -114,3 +114,4 @@ export async function getAdminStats(): Promise<AdminStatsResponse> {
     throw new Error('Не вдалося завантажити статистику зі сховища даних.');
   }
 }
+

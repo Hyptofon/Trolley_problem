@@ -41,3 +41,4 @@ export function isValidOrigin(request: NextRequest): boolean {
     return false;
   }
 }
+
