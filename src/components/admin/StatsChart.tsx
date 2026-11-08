@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { AdminStatsResponse } from '../../types';
+import { AdminStatsResponse } from '@/lib/shared/types';
 
 interface StatsChartProps {
   stats: AdminStatsResponse;

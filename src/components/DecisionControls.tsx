@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { Choice, VoteSubmissionState } from '../types';
+import { Choice, VoteSubmissionState } from '@/lib/shared/types';
 import { ShieldAlert, GitFork, Loader2 } from 'lucide-react';
 
 interface DecisionControlsProps {

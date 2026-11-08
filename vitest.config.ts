@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'server-only': path.resolve(__dirname, './tests/emptyModule.ts'),
     },
   },
   test: {
@@ -14,25 +15,23 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setupTests.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
+    exclude: ['tests/e2e/**', 'node_modules/**', '.next/**', 'dist/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/**',
+        '.next/**',
         'dist/**',
         'tests/**',
-        'google-apps-script/**',
+        'scripts/**',
         'playwright.config.ts',
-        'vite.config.ts',
         'vitest.config.ts',
         'tailwind.config.js',
         'postcss.config.js',
-        'eslint.config.js',
-        'src/main.tsx',
-        'src/types/**',
+        'next.config.mjs',
+        'src/lib/shared/types.ts',
       ],
     },
   },
 });
-

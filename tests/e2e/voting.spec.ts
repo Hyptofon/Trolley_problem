@@ -2,6 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Trolley Problem Voting Flow', () => {
   test.beforeEach(async ({ page }) => {
+    // Mock status check to unvoted initially
+    await page.route('**/api/vote/status', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ voted: false }),
+      });
+    });
+
     // Clear browser storage before each test
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
@@ -107,7 +116,7 @@ test.describe('Trolley Problem Voting Flow', () => {
     await page.getByTestId('choice-stay-button').click();
 
     // Verify error banner is visible
-    await expect(page.locator('div[role="alert"]')).toBeVisible();
+    await expect(page.getByTestId('error-alert')).toBeVisible();
 
     // Click retry
     const retryBtn = page.getByRole('button', { name: /Спробувати ще раз/i });

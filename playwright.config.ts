@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     video: 'off',
   },
@@ -27,9 +27,13 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 30000,
+    timeout: 60000,
+    env: {
+      DEMO_MODE: 'true',
+      NODE_ENV: 'development',
+      VOTE_ID_HMAC_SECRET: 'dev-vote-id-hmac-secret-at-least-32-chars-long',
+    },
   },
 });
-

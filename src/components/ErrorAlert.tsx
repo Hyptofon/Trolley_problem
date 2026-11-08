@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
@@ -15,6 +17,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({
   return (
     <div
       role="alert"
+      data-testid="error-alert"
       className="w-full max-w-4xl mx-auto my-4 p-4 sm:p-5 rounded-xl bg-red-950/40 border border-red-700/80 shadow-lg text-red-200 animate-fadeIn"
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

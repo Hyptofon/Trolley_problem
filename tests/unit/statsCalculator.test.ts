@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateStats } from '../../src/utils/statsCalculator';
+import { calculateStats } from '@/lib/shared/statsCalculator';
 
 describe('Stats Calculator Utility', () => {
   it('handles 0/0 votes gracefully', () => {
@@ -64,4 +64,3 @@ describe('Stats Calculator Utility', () => {
     expect(res.switch).toBe(0);
   });
 });
-

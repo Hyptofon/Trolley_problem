@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { Choice, VoteStatus } from '../types';
+import { Choice, VoteStatus } from '@/lib/shared/types';
 import { CheckCircle2, Info, Lock } from 'lucide-react';
 
 interface OutcomeViewProps {

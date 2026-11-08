@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Lock, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
 
@@ -36,6 +38,7 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
       {errorMessage && (
         <div
           role="alert"
+          data-testid="admin-login-error"
           className="mb-5 p-3.5 rounded-xl bg-red-950/60 border border-red-700/80 text-red-200 text-sm flex items-start gap-2.5"
         >
           <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />

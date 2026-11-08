@@ -1,44 +1,32 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { App } from '../../src/App';
-import * as api from '../../src/services/api';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import NotFound from '@/app/not-found';
 
-describe('App Layout & Routing', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/',
+}));
 
-  it('renders homepage at root path "/"', () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <App />
-      </MemoryRouter>
-    );
+describe('Layout Components & 404', () => {
+  it('renders Header with navigation link to admin', () => {
+    render(<Header />);
 
-    expect(screen.getByRole('heading', { name: /Проблема вагонетки/i })).toBeInTheDocument();
+    expect(screen.getByText('Проблема вагонетки')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Організатор/i })).toBeInTheDocument();
   });
 
-  it('renders admin page at "/admin"', async () => {
-    vi.spyOn(api, 'checkAdminSession').mockResolvedValueOnce({ authenticated: false });
+  it('renders Footer with experiment notes', () => {
+    render(<Footer />);
 
-    render(
-      <MemoryRouter initialEntries={['/admin']}>
-        <App />
-      </MemoryRouter>
-    );
-
-    expect(await screen.findByRole('heading', { name: /Вхід для організатора/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /До дилеми/i })).toBeInTheDocument();
+    expect(
+      screen.getByText(/Анонімне навчальне голосування/i)
+    ).toBeInTheDocument();
   });
 
-  it('renders 404 NotFound page on unknown routes', () => {
-    render(
-      <MemoryRouter initialEntries={['/some-unknown-route']}>
-        <App />
-      </MemoryRouter>
-    );
+  it('renders 404 NotFound page with link back to dilemma', () => {
+    render(<NotFound />);
 
     expect(screen.getByRole('heading', { name: /404 — Сторінку не знайдено/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Повернутися до дилеми/i })).toBeInTheDocument();

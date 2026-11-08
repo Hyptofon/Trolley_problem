@@ -1,34 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
-import { HomePage } from '../../src/pages/HomePage';
-import * as api from '../../src/services/api';
-import { VoteResponse } from '../../src/types';
-import {
-  clearStoredVote,
-  saveStoredVote,
-} from '../../src/services/participant';
-
-const renderWithRouter = (ui: React.ReactElement) => {
-  return render(<BrowserRouter>{ui}</BrowserRouter>);
-};
+import HomePage from '@/app/page';
+import * as api from '@/lib/client/api';
+import { VoteResponse } from '@/lib/shared/types';
+import { clearStoredVote, saveStoredVote } from '@/lib/client/participant';
 
 describe('HomePage Frontend Integration', () => {
   beforeEach(() => {
     clearStoredVote();
     vi.restoreAllMocks();
+    vi.spyOn(api, 'checkVoteStatus').mockResolvedValue({ voted: false });
   });
 
-  it('renders dilemma title, SVG scene, and exactly two choices', () => {
-    renderWithRouter(<HomePage />);
+  it('renders dilemma title, SVG scene, and exactly two choices', async () => {
+    render(<HomePage />);
 
     expect(screen.getByRole('heading', { name: /Проблема вагонетки/i })).toBeInTheDocument();
     expect(screen.getByTestId('choice-stay-button')).toBeInTheDocument();
     expect(screen.getByTestId('choice-switch-button')).toBeInTheDocument();
     expect(screen.getByLabelText(/Схема руху вагонетки/i)).toBeInTheDocument();
 
-    // Verify there is no third decision button
+    // Verify there are exactly 2 decision buttons
     const choiceButtons = screen.getAllByRole('button', { name: /Рішення/i });
     expect(choiceButtons.length).toBe(2);
   });
@@ -40,7 +33,7 @@ describe('HomePage Frontend Integration', () => {
       choice: 'stay',
     });
 
-    renderWithRouter(<HomePage />);
+    render(<HomePage />);
 
     const stayButton = screen.getByTestId('choice-stay-button');
     await user.click(stayButton);
@@ -71,7 +64,7 @@ describe('HomePage Frontend Integration', () => {
       choice: 'switch',
     });
 
-    renderWithRouter(<HomePage />);
+    render(<HomePage />);
 
     const switchButton = screen.getByTestId('choice-switch-button');
     await user.click(switchButton);
@@ -101,7 +94,7 @@ describe('HomePage Frontend Integration', () => {
 
     const submitSpy = vi.spyOn(api, 'submitVote').mockReturnValueOnce(submitPromise);
 
-    renderWithRouter(<HomePage />);
+    render(<HomePage />);
 
     const stayButton = screen.getByTestId('choice-stay-button');
     // Double click rapidly
@@ -125,7 +118,7 @@ describe('HomePage Frontend Integration', () => {
       .mockRejectedValueOnce(new api.ApiError('NETWORK_ERROR', 'Помилка мережі звʼязку', 0))
       .mockResolvedValueOnce({ status: 'recorded', choice: 'stay' });
 
-    renderWithRouter(<HomePage />);
+    render(<HomePage />);
 
     const stayButton = screen.getByTestId('choice-stay-button');
     await user.click(stayButton);
@@ -164,7 +157,7 @@ describe('HomePage Frontend Integration', () => {
       timestamp: '2026-11-05T12:00:00Z',
     });
 
-    renderWithRouter(<HomePage />);
+    render(<HomePage />);
 
     expect(
       screen.getByRole('heading', { name: /Ваш вибір: Перевести стрілку/i })
@@ -182,7 +175,7 @@ describe('HomePage Frontend Integration', () => {
       choice: 'stay',
     });
 
-    renderWithRouter(<HomePage />);
+    render(<HomePage />);
 
     const stayButton = screen.getByTestId('choice-stay-button');
     stayButton.focus();

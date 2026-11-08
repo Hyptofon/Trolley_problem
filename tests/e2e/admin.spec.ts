@@ -87,7 +87,7 @@ test.describe('Admin Panel Flow', () => {
     await expect(submitBtn).toBeEnabled();
     await submitBtn.click();
 
-    await expect(page.locator('div[role="alert"]')).toBeVisible();
+    await expect(page.getByTestId('admin-login-error')).toBeVisible();
     await expect(page.getByText('Невірний пароль')).toBeVisible();
 
     // 3. Submit correct password

@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useId } from 'react';
-import { Choice, VoteSubmissionState } from '../types';
+import { Choice, VoteSubmissionState } from '@/lib/shared/types';
 
 interface TrolleySceneProps {
   submissionState: VoteSubmissionState;

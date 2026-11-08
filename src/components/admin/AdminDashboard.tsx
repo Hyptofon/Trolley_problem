@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { AdminStatsResponse } from '../../types';
-import { fetchAdminStats, logoutAdmin } from '../../services/api';
+import { AdminStatsResponse } from '@/lib/shared/types';
+import { fetchAdminStats, logoutAdmin } from '@/lib/client/api';
 import { StatsChart } from './StatsChart';
 import { PresentationView } from './PresentationView';
 import {
@@ -190,7 +192,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               <span className="text-xs text-graphite-400 mt-1 block">
                 {stats.total === 0
                   ? 'Очікуємо перших відповідей'
-                  : 'Зареєстровано у Google Sheet'}
+                  : 'Зареєстровано в Upstash Redis'}
               </span>
             </div>
 

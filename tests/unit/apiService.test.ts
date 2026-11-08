@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   submitVote,
+  checkVoteStatus,
   loginAdmin,
   checkAdminSession,
   logoutAdmin,
   fetchAdminStats,
   ApiError,
-} from '../../src/services/api';
+} from '@/lib/client/api';
 
 describe('Frontend API Client Service', () => {
   beforeEach(() => {
@@ -65,6 +66,26 @@ describe('Frontend API Client Service', () => {
           choice: 'switch',
         })
       ).rejects.toThrow('Помилка мережі');
+    });
+  });
+
+  describe('checkVoteStatus', () => {
+    it('returns vote status when checked successfully', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({ voted: true, choice: 'switch' }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        )
+      );
+
+      const res = await checkVoteStatus({
+        participantId: '00000000-0000-4000-8000-000000000001',
+      });
+
+      expect(res).toEqual({ voted: true, choice: 'switch' });
     });
   });
 
@@ -127,4 +148,3 @@ describe('Frontend API Client Service', () => {
     });
   });
 });
-

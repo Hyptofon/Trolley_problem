@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
-import { AdminStatsResponse } from '../../types';
+import { AdminStatsResponse } from '@/lib/shared/types';
 import { StatsChart } from './StatsChart';
 import { Maximize2, Minimize2, X, RefreshCw } from 'lucide-react';
 

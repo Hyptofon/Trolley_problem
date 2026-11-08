@@ -1,14 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
-import { AdminPage } from '../../src/pages/AdminPage';
-import * as api from '../../src/services/api';
-import { AdminStatsResponse } from '../../src/types';
-
-const renderWithRouter = (ui: React.ReactElement) => {
-  return render(<BrowserRouter>{ui}</BrowserRouter>);
-};
+import AdminPage from '@/app/admin/page';
+import * as api from '@/lib/client/api';
+import { AdminStatsResponse } from '@/lib/shared/types';
 
 describe('AdminPage Frontend Integration', () => {
   const mockStats: AdminStatsResponse = {
@@ -27,7 +22,7 @@ describe('AdminPage Frontend Integration', () => {
   it('renders login form and never reveals statistics when unauthenticated', async () => {
     vi.spyOn(api, 'checkAdminSession').mockResolvedValueOnce({ authenticated: false });
 
-    renderWithRouter(<AdminPage />);
+    render(<AdminPage />);
 
     await waitFor(() => {
       expect(
@@ -48,7 +43,7 @@ describe('AdminPage Frontend Integration', () => {
       new api.ApiError('INVALID_CREDENTIALS', 'Невірний пароль адміністратора', 401)
     );
 
-    renderWithRouter(<AdminPage />);
+    render(<AdminPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('admin-password-input')).toBeInTheDocument();
@@ -71,7 +66,7 @@ describe('AdminPage Frontend Integration', () => {
     vi.spyOn(api, 'loginAdmin').mockResolvedValueOnce({ success: true });
     vi.spyOn(api, 'fetchAdminStats').mockResolvedValueOnce(mockStats);
 
-    renderWithRouter(<AdminPage />);
+    render(<AdminPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('admin-password-input')).toBeInTheDocument();
@@ -100,7 +95,7 @@ describe('AdminPage Frontend Integration', () => {
       updatedAt: '2026-11-05T15:30:00.000Z',
     });
 
-    renderWithRouter(<AdminPage />);
+    render(<AdminPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('stats-total')).toHaveTextContent('0');
@@ -113,7 +108,7 @@ describe('AdminPage Frontend Integration', () => {
     vi.spyOn(api, 'checkAdminSession').mockResolvedValueOnce({ authenticated: true });
     vi.spyOn(api, 'fetchAdminStats').mockResolvedValueOnce(mockStats);
 
-    renderWithRouter(<AdminPage />);
+    render(<AdminPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('admin-presentation-button')).toBeInTheDocument();
@@ -143,7 +138,7 @@ describe('AdminPage Frontend Integration', () => {
     vi.spyOn(api, 'fetchAdminStats').mockResolvedValueOnce(mockStats);
     const logoutSpy = vi.spyOn(api, 'logoutAdmin').mockResolvedValueOnce({ success: true });
 
-    renderWithRouter(<AdminPage />);
+    render(<AdminPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('admin-logout-button')).toBeInTheDocument();
@@ -161,4 +156,3 @@ describe('AdminPage Frontend Integration', () => {
     });
   });
 });
-

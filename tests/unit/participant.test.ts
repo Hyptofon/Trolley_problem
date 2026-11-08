@@ -7,7 +7,7 @@ import {
   clearStoredVote,
   PARTICIPANT_STORAGE_KEY,
   VOTE_STORAGE_KEY,
-} from '../../src/services/participant';
+} from '@/lib/client/participant';
 
 describe('Participant & Storage Service', () => {
   beforeEach(() => {
@@ -83,4 +83,3 @@ describe('Participant & Storage Service', () => {
     });
   });
 });
-
