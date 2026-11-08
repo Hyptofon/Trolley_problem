@@ -128,10 +128,11 @@ describe('Vote Route Handlers Integration (/api/vote & /api/vote/status)', () =>
       expect(json).toEqual({
         status: 'recorded',
         choice: 'switch',
+        previousChoice: null,
       });
     });
 
-    it('returns "already_voted" and original choice on duplicate vote without updating choice', async () => {
+    it('returns "already_voted" on identical duplicate vote', async () => {
       const id = '550e8400-e29b-41d4-a716-446655440000';
 
       // 1st vote: stay
@@ -139,12 +140,28 @@ describe('Vote Route Handlers Integration (/api/vote & /api/vote/status)', () =>
       expect(res1.status).toBe(200);
       expect((await res1.json()).status).toBe('recorded');
 
-      // 2nd vote: attempts to switch to 'switch'
-      const res2 = await votePost(createVoteRequest({ participantId: id, choice: 'switch' }));
+      // 2nd vote: stay again
+      const res2 = await votePost(createVoteRequest({ participantId: id, choice: 'stay' }));
       expect(res2.status).toBe(200);
       const json2 = await res2.json();
       expect(json2.status).toBe('already_voted');
-      expect(json2.choice).toBe('stay'); // original choice preserved!
+      expect(json2.choice).toBe('stay');
+    });
+
+    it('returns "updated" with previousChoice when participant changes vote', async () => {
+      const id = '550e8400-e29b-41d4-a716-446655440000';
+
+      // 1st vote: stay
+      const res1 = await votePost(createVoteRequest({ participantId: id, choice: 'stay' }));
+      expect(res1.status).toBe(200);
+
+      // 2nd vote: switch to 'switch'
+      const res2 = await votePost(createVoteRequest({ participantId: id, choice: 'switch' }));
+      expect(res2.status).toBe(200);
+      const json2 = await res2.json();
+      expect(json2.status).toBe('updated');
+      expect(json2.choice).toBe('switch');
+      expect(json2.previousChoice).toBe('stay');
     });
   });
 

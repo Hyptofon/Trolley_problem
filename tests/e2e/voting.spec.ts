@@ -126,5 +126,50 @@ test.describe('Trolley Problem Voting Flow', () => {
     // Now success
     await expect(page.getByRole('heading', { name: /Ваш вибір: Не втручатися/i })).toBeVisible();
   });
+
+  test('supports revoting / changing vote from stay to switch', async ({ page }) => {
+    let callCount = 0;
+    await page.route('**/api/vote', async (route) => {
+      callCount++;
+      if (callCount === 1) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ status: 'recorded', choice: 'stay' }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ status: 'updated', choice: 'switch', previousChoice: 'stay' }),
+        });
+      }
+    });
+
+    await page.goto('/');
+
+    // 1st vote: stay
+    await page.getByTestId('choice-stay-button').click();
+    await expect(page.getByRole('heading', { name: /Ваш вибір: Не втручатися/i })).toBeVisible({
+      timeout: 8000,
+    });
+    await expect(page.getByText('Деонтологія')).toBeVisible();
+
+    // Click revote button
+    const revoteBtn = page.getByTestId('revote-button');
+    await expect(revoteBtn).toBeVisible();
+    await revoteBtn.click();
+
+    // Decision controls reappear
+    await expect(page.getByTestId('choice-switch-button')).toBeVisible();
+
+    // 2nd vote: switch
+    await page.getByTestId('choice-switch-button').click();
+    await expect(page.getByRole('heading', { name: /Ваш вибір: Перевести стрілку/i })).toBeVisible({
+      timeout: 8000,
+    });
+    await expect(page.getByText('Утилітаризм')).toBeVisible();
+    await expect(page.getByText(/Голос оновлено/i)).toBeVisible();
+  });
 });
 

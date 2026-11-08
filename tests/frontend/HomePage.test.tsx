@@ -188,4 +188,63 @@ describe('HomePage Frontend Integration', () => {
       expect(screen.getByText(/Дякуємо за вашу участь/i)).toBeInTheDocument();
     });
   });
+
+  it('supports revoting / changing vote from stay to switch', async () => {
+    const user = userEvent.setup();
+    const submitSpy = vi
+      .spyOn(api, 'submitVote')
+      .mockResolvedValueOnce({
+        status: 'recorded',
+        choice: 'stay',
+      })
+      .mockResolvedValueOnce({
+        status: 'updated',
+        choice: 'switch',
+        previousChoice: 'stay',
+      });
+
+    render(<HomePage />);
+
+    // 1st vote: stay
+    await user.click(screen.getByTestId('choice-stay-button'));
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Ваш вибір: Не втручатися/i })).toBeInTheDocument();
+      expect(screen.getByText(/Деонтологія/i)).toBeInTheDocument();
+    });
+
+    // Click revote button
+    const revoteBtn = screen.getByTestId('revote-button');
+    expect(revoteBtn).toBeInTheDocument();
+    await user.click(revoteBtn);
+
+    // Decision controls should be back
+    await waitFor(() => {
+      expect(screen.getByTestId('choice-switch-button')).toBeInTheDocument();
+    });
+
+    // 2nd vote: switch
+    await user.click(screen.getByTestId('choice-switch-button'));
+
+    expect(submitSpy).toHaveBeenCalledTimes(2);
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Ваш вибір: Перевести стрілку/i })).toBeInTheDocument();
+      expect(screen.getByText(/Утилітаризм/i)).toBeInTheDocument();
+      expect(screen.getByText(/Голос оновлено/i)).toBeInTheDocument();
+    });
+  });
+
+  it('allows clicking "Почати експеримент" in idle phase', async () => {
+    const user = userEvent.setup();
+    render(<HomePage />);
+
+    const startBtn = screen.getByTestId('start-experiment-button');
+    expect(startBtn).toBeInTheDocument();
+
+    await user.click(startBtn);
+
+    // Start button should disappear as intro animation starts
+    await waitFor(() => {
+      expect(screen.queryByTestId('start-experiment-button')).not.toBeInTheDocument();
+    });
+  });
 });

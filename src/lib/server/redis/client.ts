@@ -89,11 +89,6 @@ export class InMemoryRedisAdapter implements IRedisClient {
 
       this.cleanExpired(voterKey);
       const existing = this.strings.get(voterKey);
-      if (existing) {
-        return ['already_voted', existing.value] as unknown as T;
-      }
-
-      this.strings.set(voterKey, { value: choice });
 
       let currentCounts = this.hashes.get(countsKey);
       if (!currentCounts) {
@@ -101,11 +96,29 @@ export class InMemoryRedisAdapter implements IRedisClient {
         this.hashes.set(countsKey, currentCounts);
       }
 
-      const prevChoiceCount = parseInt(currentCounts[choice] || '0', 10);
-      currentCounts[choice] = String(prevChoiceCount + 1);
+      if (!existing) {
+        this.strings.set(voterKey, { value: choice });
+        const prevCount = parseInt(currentCounts[choice] || '0', 10);
+        currentCounts[choice] = String(prevCount + 1);
+        currentCounts.updatedAt = updatedAt;
+        return ['recorded', choice, ''] as unknown as T;
+      }
+
+      if (existing.value === choice) {
+        return ['already_voted', choice, choice] as unknown as T;
+      }
+
+      // Existing voter is replacing their vote (e.g. stay -> switch)
+      const prevOldCount = parseInt(currentCounts[existing.value] || '0', 10);
+      currentCounts[existing.value] = String(Math.max(0, prevOldCount - 1));
+
+      const prevNewCount = parseInt(currentCounts[choice] || '0', 10);
+      currentCounts[choice] = String(prevNewCount + 1);
+
+      this.strings.set(voterKey, { value: choice });
       currentCounts.updatedAt = updatedAt;
 
-      return ['recorded', choice] as unknown as T;
+      return ['updated', choice, existing.value] as unknown as T;
     }
 
     throw new Error('Unsupported Lua script in InMemoryRedisAdapter');

@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3005',
     trace: 'on-first-retry',
     video: 'off',
   },
@@ -26,14 +26,14 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: 'npx next dev -p 3005',
+    url: 'http://localhost:3005',
     reuseExistingServer: !process.env.CI,
     timeout: 60000,
     env: {
       DEMO_MODE: 'true',
-      NODE_ENV: 'development',
-      VOTE_ID_HMAC_SECRET: 'dev-vote-id-hmac-secret-at-least-32-chars-long',
+      ADMIN_PASSWORD_HASH: '16384:8:1$5454d96429b9aa379018c20b02b95d6c$06130ff3b885ec6ef730d87fecb4f66f06020fd4204ca0616076fe0690e76a9621827bc2ef86d104671038de7d9501c033fd58a933ddd885ecf57d1b7fb3fceb',
+      VOTE_ID_HMAC_SECRET: '002bb44eba67c074d1f84026d1168f6a08df00250fbe222aab8f8ac4ce07a2eb',
     },
   },
 });

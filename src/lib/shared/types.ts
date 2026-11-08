@@ -1,6 +1,6 @@
 export type Choice = 'stay' | 'switch';
 
-export type VoteStatus = 'recorded' | 'already_voted';
+export type VoteStatus = 'recorded' | 'updated' | 'already_voted';
 
 export interface VoteRequest {
   participantId: string;
@@ -10,6 +10,7 @@ export interface VoteRequest {
 export interface VoteResponse {
   status: VoteStatus;
   choice: Choice;
+  previousChoice?: Choice | null;
 }
 
 export interface VoteStatusRequest {
@@ -55,6 +56,7 @@ export type VoteSubmissionState =
   | 'idle'
   | 'submitting'
   | 'recorded'
+  | 'updated'
   | 'already_voted'
   | 'error';
 
@@ -65,3 +67,19 @@ export interface StoredVote {
   timestamp: string;
 }
 
+export type ExperimentPhase =
+  | 'idle'
+  | 'intro-animation'
+  | 'decision-pause'
+  | 'switching'
+  | 'outcome-animation'
+  | 'result';
+
+export interface EthicalExplanation {
+  choice: Choice;
+  frameworkName: string;
+  corePrinciple: string;
+  detailedAnalysis: string;
+  omissionBiasExplanation: string;
+  quote: string;
+}

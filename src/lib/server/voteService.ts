@@ -1,5 +1,5 @@
 import 'server-only';
-import { Choice, VoteResponse, VoteStatusResponse } from '../shared/types';
+import { Choice, VoteResponse, VoteStatus, VoteStatusResponse } from '../shared/types';
 import { voteRequestSchema, voteStatusRequestSchema } from '../shared/validation';
 import { getServerEnv } from './env';
 import { getParticipantDigest } from './crypto';
@@ -45,17 +45,25 @@ export async function recordVote(
   const timestamp = new Date().toISOString();
 
   try {
-    const result = await redis.eval<[string, string]>(
+    const result = await redis.eval<[string, string, string]>(
       ATOMIC_VOTE_LUA,
       [voterKey, countsKey],
       [choice, timestamp]
     );
 
-    const [status, confirmedChoice] = result;
+    const [status, confirmedChoice, prevChoice] = result;
+
+    const voteStatus: VoteStatus =
+      status === 'updated'
+        ? 'updated'
+        : status === 'already_voted'
+        ? 'already_voted'
+        : 'recorded';
 
     return {
-      status: status === 'already_voted' ? 'already_voted' : 'recorded',
+      status: voteStatus,
       choice: (confirmedChoice as Choice) || choice,
+      previousChoice: (prevChoice as Choice) || null,
     };
   } catch (err) {
     if (err instanceof VoteServiceError) throw err;
