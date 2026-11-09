@@ -22,7 +22,7 @@ export const MusicToggle: React.FC = () => {
           ? 'Вимкнути фонову напружену музику'
           : 'Увімкнути фонову напружену музику'
       }
-      className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-pill px-3 sm:px-4 py-1 sm:py-1.5 border transition-all duration-300 text-xs font-mono tracking-wider cursor-pointer ${
+      className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-pill px-2.5 sm:px-3.5 py-1 sm:py-1.5 border transition-all duration-300 text-xs font-mono tracking-wider cursor-pointer ${
         musicEnabled
           ? 'border-obsidian/30 hover:border-obsidian text-obsidian bg-paper/60 hover:bg-obsidian/5'
           : 'border-neutral-400/40 text-felt-gray hover:text-obsidian bg-paper/30 hover:bg-obsidian/5'
@@ -30,13 +30,13 @@ export const MusicToggle: React.FC = () => {
     >
       {musicEnabled ? (
         <>
-          <Music className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-          <span className="uppercase text-[11px]">Музика</span>
+          <Music className="w-3.5 h-3.5 text-amber-500 animate-pulse flex-shrink-0" />
+          <span className="hidden sm:inline uppercase text-[11px]">Музика</span>
         </>
       ) : (
         <>
-          <Music className="w-3.5 h-3.5 text-neutral-400 opacity-60" />
-          <span className="uppercase text-[11px] line-through decoration-neutral-400">
+          <Music className="w-3.5 h-3.5 text-neutral-400 opacity-60 flex-shrink-0" />
+          <span className="hidden sm:inline uppercase text-[11px] line-through decoration-neutral-400">
             Музика
           </span>
         </>

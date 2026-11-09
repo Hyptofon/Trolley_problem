@@ -111,12 +111,12 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
             }`}
           />
 
-          <div className="p-5 sm:p-7 flex flex-col justify-between h-[calc(100%-6px)]">
+          <div className="p-4 sm:p-7 flex flex-col justify-between h-[calc(100%-6px)]">
             <div>
               {/* Badge & Key Indicator */}
-              <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.15em] font-semibold border rounded-md ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.12em] sm:tracking-[0.15em] font-semibold border rounded-md ${
                     activeChoice === 'stay'
                       ? 'bg-paper/20 text-paper border-paper/40'
                       : 'bg-obsidian/5 text-obsidian border-obsidian/20'
@@ -127,10 +127,10 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
                 </span>
 
                 {isSubmitting && activeChoice === 'stay' ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-current flex-shrink-0" />
+                  <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-current flex-shrink-0" />
                 ) : (
                   <span
-                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 transition-transform group-hover:scale-110 ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 transition-transform group-hover:scale-110 ${
                       activeChoice === 'stay'
                         ? 'border-current bg-transparent text-current'
                         : 'border-obsidian/30 bg-obsidian/5 text-obsidian'
@@ -142,7 +142,7 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
               </div>
 
               {/* Title */}
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors">
+              <h3 className="text-xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors">
                 Не втручатися
               </h3>
 
@@ -212,12 +212,12 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
             }`}
           />
 
-          <div className="p-5 sm:p-7 flex flex-col justify-between h-[calc(100%-6px)]">
+          <div className="p-4 sm:p-7 flex flex-col justify-between h-[calc(100%-6px)]">
             <div>
               {/* Badge & Key Indicator */}
-              <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.15em] font-semibold border rounded-md ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.12em] sm:tracking-[0.15em] font-semibold border rounded-md ${
                     activeChoice === 'switch'
                       ? 'bg-paper/20 text-paper border-paper/40'
                       : 'bg-obsidian/5 text-obsidian border-obsidian/20'
@@ -228,10 +228,10 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
                 </span>
 
                 {isSubmitting && activeChoice === 'switch' ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-current flex-shrink-0" />
+                  <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-current flex-shrink-0" />
                 ) : (
                   <span
-                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 transition-transform group-hover:scale-110 ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 transition-transform group-hover:scale-110 ${
                       activeChoice === 'switch'
                         ? 'border-current bg-transparent text-current'
                         : 'border-obsidian/30 bg-obsidian/5 text-obsidian'
@@ -243,7 +243,7 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
               </div>
 
               {/* Title */}
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors">
+              <h3 className="text-xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors">
                 Перевести стрілку
               </h3>
 

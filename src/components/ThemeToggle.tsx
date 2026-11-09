@@ -16,17 +16,17 @@ export const ThemeToggle: React.FC = () => {
       onClick={toggleTheme}
       aria-label={`${labelText} тема — перемкнути на ${isDark ? 'світлу' : 'темну'}`}
       title={`${labelText} тема — перемкнути на ${isDark ? 'світлу' : 'темну'}`}
-      className="inline-flex items-center gap-2 rounded-pill px-4 py-1.5 border border-obsidian/20 hover:border-obsidian text-obsidian bg-paper/60 hover:bg-obsidian/5 transition-all duration-300 text-xs font-mono tracking-wider cursor-pointer"
+      className="inline-flex items-center gap-1.5 sm:gap-2 rounded-pill px-2.5 sm:px-3.5 py-1 sm:py-1.5 border border-obsidian/20 hover:border-obsidian text-obsidian bg-paper/60 hover:bg-obsidian/5 transition-all duration-300 text-xs font-mono tracking-wider cursor-pointer"
     >
       {isDark ? (
         <>
-          <Moon className="w-3.5 h-3.5 text-amber-400" />
-          <span className="uppercase text-[11px]">Темна</span>
+          <Moon className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+          <span className="hidden sm:inline uppercase text-[11px]">Темна</span>
         </>
       ) : (
         <>
-          <Sun className="w-3.5 h-3.5 text-amber-600" />
-          <span className="uppercase text-[11px]">Світла</span>
+          <Sun className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+          <span className="hidden sm:inline uppercase text-[11px]">Світла</span>
         </>
       )}
     </button>

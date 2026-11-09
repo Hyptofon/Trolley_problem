@@ -401,28 +401,31 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
       {/* Floating Button for Idle State: "Почати експеримент" */}
       {currentPhase === 'idle' && (
-        <div className="absolute inset-x-0 bottom-6 sm:bottom-8 flex flex-col items-center justify-center p-4 text-center z-20 pointer-events-none transition-opacity">
+        <div className="absolute inset-x-0 bottom-3 sm:bottom-6 md:bottom-8 flex flex-col items-center justify-center p-2 sm:p-4 text-center z-20 pointer-events-none transition-opacity">
           <button
             type="button"
             data-testid="start-experiment-button"
             onClick={onStartExperiment}
-            className="pointer-events-auto btn-ghost-pill text-sm uppercase tracking-[0.2em] font-medium py-3 px-8 shadow-lg bg-paper/90 backdrop-blur-md border border-obsidian/20 hover:bg-obsidian hover:text-paper transition-all transform hover:scale-105"
+            className="pointer-events-auto btn-ghost-pill text-xs sm:text-sm uppercase tracking-[0.18em] sm:tracking-[0.2em] font-medium py-2.5 px-6 sm:py-3 sm:px-8 shadow-lg bg-paper/90 backdrop-blur-md border border-obsidian/20 hover:bg-obsidian hover:text-paper transition-all transform hover:scale-105"
           >
-            <Play className="w-4 h-4 fill-current mr-2" />
+            <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current mr-2" />
             Почати експеримент
           </button>
         </div>
       )}
 
-      {/* In-Scene Elegant Decision Choice HUD: Positioned cleanly in the bottom-left empty zone without obstructing tracks or people */}
+      {/* Decision Choice HUD:
+          - On desktop (md: and up): Positioned cleanly as an in-scene overlay card in the lower-left empty quadrant without covering tracks or characters.
+          - On mobile (< md): Positioned directly underneath the SVG scene canvas in normal flow with a subtle top border, leaving the 163-169px SVG railway canvas 100% visible and unobstructed while placing tap targets comfortably at thumb reach.
+      */}
       {currentPhase === 'decision-pause' && (
         <div
           data-testid="scene-decision-hud"
-          className="absolute bottom-3 left-3 right-3 sm:right-auto sm:bottom-5 sm:left-6 z-30 sm:max-w-[420px] pointer-events-auto transition-all duration-500 ease-out animate-fadeIn"
+          className="relative w-full md:absolute md:bottom-5 md:left-6 md:right-auto z-30 md:max-w-[420px] pointer-events-auto transition-all duration-500 ease-out animate-fadeIn border-t md:border border-obsidian/15 md:rounded-2xl bg-paper/95 backdrop-blur-md p-3 sm:p-4 md:shadow-2xl"
         >
-          <div className="bg-paper/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-obsidian/20 shadow-2xl flex flex-col">
+          <div className="flex flex-col">
             {/* Header / Dilemma Prompt */}
-            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-obsidian/10">
+            <div className="flex items-center justify-between gap-2 mb-2 pb-1.5 sm:pb-2 border-b border-obsidian/10">
               <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-obsidian font-semibold">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block" />
                 Час вирішувати
@@ -440,7 +443,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
                 data-testid="scene-choice-stay-button"
                 onClick={() => onSelectChoice && onSelectChoice('stay')}
                 disabled={isSubmitting}
-                className="group relative flex flex-col justify-between p-2.5 rounded-xl border border-obsidian/20 bg-paper/60 hover:bg-obsidian hover:text-paper transition-all duration-200 text-left cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group relative flex flex-col justify-between p-2 sm:p-2.5 rounded-xl border border-obsidian/20 bg-paper/60 hover:bg-obsidian hover:text-paper transition-all duration-200 text-left cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[9px] font-mono uppercase tracking-wider text-felt-gray group-hover:text-paper/80">
@@ -450,10 +453,10 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
                     1
                   </kbd>
                 </div>
-                <div className="font-semibold text-xs leading-tight text-obsidian group-hover:text-paper">
+                <div className="font-semibold text-[11px] sm:text-xs leading-tight text-obsidian group-hover:text-paper">
                   Не втручатися
                 </div>
-                <div className="text-[10px] text-felt-gray group-hover:text-paper/80 mt-1 leading-tight">
+                <div className="text-[9px] sm:text-[10px] text-felt-gray group-hover:text-paper/80 mt-1 leading-tight">
                   Загине 5 людей
                 </div>
               </button>
@@ -464,7 +467,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
                 data-testid="scene-choice-switch-button"
                 onClick={() => onSelectChoice && onSelectChoice('switch')}
                 disabled={isSubmitting}
-                className="group relative flex flex-col justify-between p-2.5 rounded-xl border border-obsidian/20 bg-paper/60 hover:bg-obsidian hover:text-paper transition-all duration-200 text-left cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group relative flex flex-col justify-between p-2 sm:p-2.5 rounded-xl border border-obsidian/20 bg-paper/60 hover:bg-obsidian hover:text-paper transition-all duration-200 text-left cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[9px] font-mono uppercase tracking-wider text-felt-gray group-hover:text-paper/80">
@@ -474,17 +477,17 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
                     2
                   </kbd>
                 </div>
-                <div className="font-semibold text-xs leading-tight text-obsidian group-hover:text-paper">
+                <div className="font-semibold text-[11px] sm:text-xs leading-tight text-obsidian group-hover:text-paper">
                   Потягнути важіль
                 </div>
-                <div className="text-[10px] text-felt-gray group-hover:text-paper/80 mt-1 leading-tight">
+                <div className="text-[9px] sm:text-[10px] text-felt-gray group-hover:text-paper/80 mt-1 leading-tight">
                   Загине 1 людина
                 </div>
               </button>
             </div>
 
             {/* Subtle helper note */}
-            <div className="mt-2 text-[10px] text-felt-gray font-mono text-center">
+            <div className="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] text-felt-gray font-mono text-center">
               Для розгорнутого аналізу наслідків прогортайте вниз ↓
             </div>
           </div>
