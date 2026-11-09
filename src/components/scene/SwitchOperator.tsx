@@ -14,14 +14,27 @@ export const SwitchOperator: React.FC<SwitchOperatorProps> = ({
   isPaused = false,
   leverSwitched = false,
 }) => {
-  const qMarkColor = isDark ? '#fbbf24' : '#000000';
-
   return (
     <g id="switch-operator-group" className="select-none">
-      {/* Dynamic Keyframes for Operator Eyes */}
+      {/* Dynamic Keyframes for Operator Eyes & Subtle Question Mark Float */}
       <style
         dangerouslySetInnerHTML={{
-          __html: YOU_SVG.style,
+          __html: `
+            ${YOU_SVG.style}
+            @keyframes subtleQuestionBounce {
+              0%, 100% {
+                transform: translateY(0px);
+                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+              }
+              50% {
+                transform: translateY(-6px);
+                animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+              }
+            }
+            .subtle-qmark-bounce {
+              animation: subtleQuestionBounce 1400ms infinite;
+            }
+          `,
         }}
       />
 
@@ -43,23 +56,25 @@ export const SwitchOperator: React.FC<SwitchOperatorProps> = ({
         )}
       </g>
 
-      {/* Interactive Bouncing Question Mark during decision-pause */}
+      {/* Interactive Gentle Bouncing Question Mark directly above operator during decision-pause */}
       {isPaused && (
         <g
-          transform="translate(1012, 10)"
-          className="animate-bounce pointer-events-none"
+          transform="translate(1010, -32)"
+          className="pointer-events-none"
         >
-          <text
-            x="0"
-            y="0"
-            fill={qMarkColor}
-            fontSize="38"
-            fontWeight="900"
-            fontFamily="sans-serif"
-            textAnchor="middle"
-          >
-            ?
-          </text>
+          <g className="subtle-qmark-bounce">
+            <text
+              x="0"
+              y="0"
+              fill="black"
+              fontSize="44"
+              fontWeight="900"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              textAnchor="middle"
+            >
+              ?
+            </text>
+          </g>
         </g>
       )}
 
