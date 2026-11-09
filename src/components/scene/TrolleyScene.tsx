@@ -11,7 +11,7 @@ import { SwitchOperator } from './SwitchOperator';
 import { TrackCharacters } from './TrackCharacters';
 import { TrolleyVehicle } from './TrolleyVehicle';
 import { SCENE_CONFIG } from './nealAssets';
-import { Play, FastForward, AlertTriangle, Eye } from 'lucide-react';
+import { Play, FastForward, AlertTriangle } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(MotionPathPlugin);
@@ -70,19 +70,6 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
   // Track collision impact and screen vibration
   const [hasImpacted, setHasImpacted] = useState<boolean>(false);
   const [screenShake, setScreenShake] = useState<boolean>(false);
-
-  // Dev-only Visual Comparison Overlay (Toggleable via button or hotkey 'O')
-  const [showOverlay, setShowOverlay] = useState<boolean>(false);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'o' || e.key === 'O') {
-        setShowOverlay((prev) => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   // Precise sub-pixel coordinates for Trolley
   const [trolleyPos, setTrolleyPos] = useState<{ x: number; y: number; angle: number }>({
@@ -398,40 +385,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
             filterId={filterId}
           />
         </g>
-
-        {/* Dev-only Visual Comparison Overlay */}
-        {showOverlay && (
-          <g id="dev-reference-overlay" opacity="0.4" className="pointer-events-none select-none">
-            <image
-              href="/trolley-comic-reference.jpg"
-              x="0"
-              y="0"
-              width="1850"
-              height="860"
-              preserveAspectRatio="xMidYMid slice"
-            />
-          </g>
-        )}
       </svg>
-
-      {/* Dev Visual Comparison Toggle Pill (Clickable & hotkey 'O') */}
-      <div className="absolute top-3 right-3 z-30">
-        <button
-          type="button"
-          onClick={() => setShowOverlay((v) => !v)}
-          className={`text-[11px] font-mono tracking-wider py-1 px-3 rounded-full border transition-all flex items-center gap-1.5 shadow-sm ${
-            showOverlay
-              ? 'bg-amber-500 text-black border-amber-400 font-bold'
-              : isDark
-              ? 'bg-neutral-900/80 text-neutral-300 border-neutral-700 hover:bg-neutral-800'
-              : 'bg-white/80 text-neutral-700 border-neutral-300 hover:bg-white'
-          }`}
-          title="Натисніть 'O' або клікніть для порівняння з референсом"
-        >
-          <Eye className="w-3.5 h-3.5" />
-          <span>{showOverlay ? 'Референс УВІМК' : 'Референс (O)'}</span>
-        </button>
-      </div>
 
       {/* Floating Button for Idle State: "Почати експеримент" */}
       {currentPhase === 'idle' && (
