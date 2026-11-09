@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SCENE_CONFIG, TRACK_SVG } from './nealAssets';
+import { SCENE_CONFIG } from './nealAssets';
 
 interface RailwayTracksProps {
   isDark?: boolean;
@@ -17,12 +17,11 @@ export const RailwayTracks: React.FC<RailwayTracksProps> = ({
       <g
         transform={`translate(${SCENE_CONFIG.trackOffset.x}, ${SCENE_CONFIG.trackOffset.y})`}
       >
-        {/* Infinite rail extensions running completely off-screen backwards and forwards */}
         <g transform="matrix(1,0,0,1,-222,-2045)">
-          {/* 1. Left backwards extensions (behind approaching trolley, exiting off-screen left) */}
+          {/* 1. Left backwards extensions starting from beyond left edge of the site (X=-300) with uniform ~96px gauge */}
           <line
-            x1="-700"
-            y1="1782"
+            x1="-300"
+            y1="1897"
             x2="226"
             y2="2049"
             stroke="black"
@@ -30,21 +29,65 @@ export const RailwayTracks: React.FC<RailwayTracksProps> = ({
             strokeLinecap="round"
           />
           <line
-            x1="-700"
-            y1="1838"
+            x1="-300"
+            y1="1993"
             x2="226"
-            y2="2105"
+            y2="2145"
             stroke="black"
             strokeWidth="7"
             strokeLinecap="round"
           />
 
-          {/* 2. Right straight extensions (past the 5 victims, exiting off-screen right) */}
+          {/* Smooth transition from approach bottom rail into fork */}
+          <path
+            d="M226,2145 C450,2210 650,2270 806,2310"
+            fill="none"
+            stroke="black"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+
+          {/* 2. Authentic Straight main track (top rail straight line from 226 to 1746) */}
+          <line
+            x1="226"
+            y1="2049"
+            x2="1746"
+            y2="2488"
+            stroke="black"
+            strokeWidth="7"
+          />
+
+          {/* Straight bottom rail past fork through 5 people (806 to 1706) */}
+          <path
+            d="M806,2310 C956,2364 1101.64,2414.34 1706,2624"
+            fill="none"
+            stroke="black"
+            strokeWidth="7"
+          />
+
+          {/* 3. Authentic Branch track through 1 person */}
+          {/* Branch bottom rail (806 to 1783) */}
+          <path
+            d="M806,2310 C946.787,2381.49 1093,2279.5 1440.23,2203.71 C1580,2180 1680,2220 1783,2254.99"
+            fill="none"
+            stroke="black"
+            strokeWidth="7"
+          />
+
+          {/* Branch top rail (860 to 1792) */}
+          <path
+            d="M860,2225.29 C895.165,2234.92 991.496,2175.59 1132,2107 C1328.95,2010.86 1714.81,2120.85 1792,2136"
+            fill="none"
+            stroke="black"
+            strokeWidth="7"
+          />
+
+          {/* 4. Right straight extensions (5 people): parallel at constant 147px gauge to X=2600 exiting off-screen right */}
           <line
             x1="1746"
             y1="2488"
-            x2="2700"
-            y2="2764"
+            x2="2600"
+            y2="2735"
             stroke="black"
             strokeWidth="7"
             strokeLinecap="round"
@@ -52,19 +95,19 @@ export const RailwayTracks: React.FC<RailwayTracksProps> = ({
           <line
             x1="1706"
             y1="2624"
-            x2="2700"
-            y2="2972"
+            x2="2600"
+            y2="2882"
             stroke="black"
             strokeWidth="7"
             strokeLinecap="round"
           />
 
-          {/* 3. Right branch extensions (past the 1 victim, exiting off-screen right) */}
+          {/* 5. Right branch extensions (1 person): parallel at constant 119px gauge (slope 0.178) to X=2600 exiting off-screen right */}
           <line
             x1="1792"
             y1="2136"
-            x2="2700"
-            y2="2300"
+            x2="2600"
+            y2="2280"
             stroke="black"
             strokeWidth="7"
             strokeLinecap="round"
@@ -72,8 +115,8 @@ export const RailwayTracks: React.FC<RailwayTracksProps> = ({
           <line
             x1="1783"
             y1="2255"
-            x2="2700"
-            y2="2374"
+            x2="2600"
+            y2="2400"
             stroke="black"
             strokeWidth="7"
             strokeLinecap="round"
@@ -89,9 +132,6 @@ export const RailwayTracks: React.FC<RailwayTracksProps> = ({
             />
           )}
         </g>
-
-        {/* Neal.fun authentic unbroken track paths */}
-        <g dangerouslySetInnerHTML={{ __html: TRACK_SVG.body }} />
       </g>
     </g>
   );

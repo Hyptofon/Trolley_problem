@@ -333,7 +333,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
       {/* Pure SVG Vector Scene */}
       <svg
         viewBox={SCENE_CONFIG.viewBox}
-        className="w-full h-full block"
+        className="w-full h-full block overflow-visible"
         role="img"
         aria-label="Схема руху вагонетки та розгалуження колій"
       >

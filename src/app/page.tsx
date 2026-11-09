@@ -166,14 +166,14 @@ export default function HomePage() {
   const isCompleted = phase === 'result' && selectedChoice !== null;
 
   return (
-    <main className="w-full min-h-screen px-2 sm:px-4 md:px-6 py-3 sm:py-6 flex flex-col items-center relative overflow-x-clip transition-colors duration-700">
+    <main className="w-full min-h-screen py-3 sm:py-6 flex flex-col items-center relative overflow-x-clip transition-colors duration-700">
       {/* Background Iridescent Chromatic Atmosphere Wash */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] pointer-events-none opacity-20 -z-10">
         <div className="w-full h-full iridescent-wash" />
       </div>
 
       {/* Editorial Title & Dilemma Statement */}
-      <section className="w-full px-4 sm:px-8 text-center mb-3 sm:mb-5" aria-labelledby="dilemma-title">
+      <section className="w-full max-w-5xl px-4 sm:px-8 text-center mb-3 sm:mb-5" aria-labelledby="dilemma-title">
         <div className="flex items-center justify-center gap-3 mb-2">
           <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-felt-gray">
             [ Етичний експеримент · 1967 ]
@@ -207,7 +207,7 @@ export default function HomePage() {
       </section>
 
       {/* Full-width Wide Cinematic SVG Interactive Scene — Edge to Edge */}
-      <div className="w-full max-w-[1450px] mx-auto my-1 sm:my-2 overflow-visible">
+      <div className="w-full my-1 sm:my-2 overflow-hidden">
         <TrolleyScene
           phase={phase}
           submissionState={submissionState}
@@ -234,7 +234,7 @@ export default function HomePage() {
 
       {/* Error state alert banner with retry */}
       {submissionState === 'error' && errorMessage && (
-        <div className="w-full px-2 sm:px-6 mx-auto mt-6">
+        <div className="w-full max-w-4xl px-4 sm:px-6 mx-auto mt-6">
           <ErrorAlert
             message={errorMessage}
             onRetry={handleRetry}
@@ -244,24 +244,26 @@ export default function HomePage() {
       )}
 
       {/* Decision Controls or Outcome Analysis */}
-      {!isCompleted ? (
-        <DecisionControls
-          onSelect={handleSelectChoice}
-          submissionState={submissionState}
-          activeChoice={selectedChoice}
-          phase={phase}
-        />
-      ) : (
-        selectedChoice && (
-          <OutcomeView
-            choice={selectedChoice}
-            status={voteStatus}
-            participantId={participantId}
-            onRevote={handleRevote}
-            previousChoice={previousChoice}
+      <div className="w-full max-w-6xl px-4 sm:px-6 mx-auto">
+        {!isCompleted ? (
+          <DecisionControls
+            onSelect={handleSelectChoice}
+            submissionState={submissionState}
+            activeChoice={selectedChoice}
+            phase={phase}
           />
-        )
-      )}
+        ) : (
+          selectedChoice && (
+            <OutcomeView
+              choice={selectedChoice}
+              status={voteStatus}
+              participantId={participantId}
+              onRevote={handleRevote}
+              previousChoice={previousChoice}
+            />
+          )
+        )}
+      </div>
     </main>
   );
 }
