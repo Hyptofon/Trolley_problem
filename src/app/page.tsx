@@ -17,9 +17,10 @@ import { TrolleyScene } from '@/components/TrolleyScene';
 import { DecisionControls } from '@/components/DecisionControls';
 import { OutcomeView } from '@/components/OutcomeView';
 import { ErrorAlert } from '@/components/ErrorAlert';
-import { RotateCcw } from 'lucide-react';
+import { useExperiment } from '@/components/ExperimentProvider';
 
 export default function HomePage() {
+  const { setHasVoted, registerRevoteHandler } = useExperiment();
   const [phase, setPhase] = useState<ExperimentPhase>('idle');
   const [submissionState, setSubmissionState] =
     useState<VoteSubmissionState>('idle');
@@ -157,53 +158,59 @@ export default function HomePage() {
     setAnimationComplete(false);
     setErrorMessage(null);
     setPhase('intro-animation');
-  }, []);
+    setHasVoted(false);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [setHasVoted]);
+
+  // Connect Revote to Header via ExperimentContext
+  useEffect(() => {
+    return registerRevoteHandler(handleRevote);
+  }, [registerRevoteHandler, handleRevote]);
+
+  // Sync vote completion state to context
+  useEffect(() => {
+    const isVoted =
+      voteStatus === 'recorded' ||
+      voteStatus === 'already_voted' ||
+      voteStatus === 'updated';
+    if (phase === 'result' && isVoted) {
+      setHasVoted(true);
+    } else if (phase !== 'result') {
+      setHasVoted(false);
+    }
+  }, [phase, voteStatus, setHasVoted]);
 
   const isCompleted = phase === 'result' && selectedChoice !== null;
 
   return (
-    <main className="w-full min-h-screen py-3 sm:py-6 flex flex-col items-center relative overflow-x-clip transition-colors duration-700">
+    <main className="w-full min-h-screen py-2 sm:py-3 flex flex-col items-center relative overflow-x-clip transition-colors duration-700">
       {/* Background Iridescent Chromatic Atmosphere Wash */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] pointer-events-none opacity-20 -z-10">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] pointer-events-none opacity-20 -z-10">
         <div className="w-full h-full iridescent-wash" />
       </div>
 
-      {/* Editorial Title & Dilemma Statement */}
-      <section className="w-full max-w-5xl px-4 sm:px-8 text-center mb-3 sm:mb-5" aria-labelledby="dilemma-title">
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-felt-gray">
-            [ Етичний експеримент · 1967 ]
-          </span>
-          {isCompleted && (
-            <button
-              type="button"
-              onClick={handleRevote}
-              className="btn-ghost-pill text-xs uppercase tracking-[0.15em] py-1 px-4 text-felt-gray hover:text-obsidian hover:bg-obsidian/[0.05]"
-            >
-              <RotateCcw className="w-3 h-3 mr-1.5" />
-              Змінити вибір
-            </button>
-          )}
-        </div>
-
+      {/* Editorial Title & Dilemma Statement — Clean, Compact, Tight */}
+      <section className="w-full max-w-4xl px-4 sm:px-6 text-center mb-1 sm:mb-2.5" aria-labelledby="dilemma-title">
         <h1
           id="dilemma-title"
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-obsidian text-center leading-tight mb-3"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-obsidian text-center leading-tight mb-1"
         >
           Проблема вагонетки
         </h1>
 
-        <p className="max-w-3xl mx-auto text-sm sm:text-base md:text-lg text-felt-gray leading-relaxed font-light text-center">
+        <p className="max-w-2xl mx-auto text-xs sm:text-sm text-felt-gray leading-relaxed font-light text-center">
           Некерована важка вагонетка мчить колією на{' '}
           <strong className="text-obsidian font-medium">пʼятьох людей</strong>,
           які не можуть зійти з рейок. Ви стоїте біля стрілочного важеля. Якщо ви
-          потягнете його — вагонетка поверне на бокову колію, де перебуває{' '}
+          потягнете його — вона поверне на бокову колію, де перебуває{' '}
           <strong className="text-obsidian font-medium">одна людина</strong>.
         </p>
       </section>
 
-      {/* Full-width Wide Cinematic SVG Interactive Scene — Edge to Edge */}
-      <div className="w-full my-1 sm:my-2 overflow-hidden">
+      {/* Full-width Wide Cinematic SVG Interactive Scene — Edge to Edge with Viewport Constraint */}
+      <div className="w-full my-0.5 sm:my-1 flex items-center justify-center">
         <TrolleyScene
           phase={phase}
           submissionState={submissionState}
@@ -211,6 +218,7 @@ export default function HomePage() {
           animationComplete={animationComplete}
           onPhaseChange={handlePhaseChange}
           onStartExperiment={handleStartExperiment}
+          onSelectChoice={handleSelectChoice}
           onAnimationEnd={() => {
             setAnimationComplete(true);
             setPhase('result');

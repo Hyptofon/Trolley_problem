@@ -6,10 +6,13 @@ import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
 import { SoundToggle } from './SoundToggle';
 import { MusicToggle } from './MusicToggle';
+import { useExperiment } from './ExperimentProvider';
+import { RotateCcw } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
+  const { hasVoted, triggerRevote } = useExperiment();
 
   return (
     <header className="w-full h-[66px] border-b border-obsidian/10 bg-paper/95 backdrop-blur-sm sticky top-0 z-40 transition-colors duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]">
@@ -25,13 +28,13 @@ export const Header: React.FC = () => {
               Проблема вагонетки
             </span>
             <span className="text-[10px] uppercase tracking-[0.15em] text-felt-gray leading-none mt-1">
-              Етичний експеримент
+              Етичний експеримент · 1967
             </span>
           </div>
         </Link>
 
         {/* Minimal Navigation & Audio / Theme Controls */}
-        <nav aria-label="Головна навігація" className="flex items-center gap-2 sm:gap-4 md:gap-5">
+        <nav aria-label="Головна навігація" className="flex items-center gap-2 sm:gap-3 md:gap-5">
           {isAdmin && (
             <Link
               href="/"
@@ -39,6 +42,20 @@ export const Header: React.FC = () => {
             >
               ← До дилеми
             </Link>
+          )}
+
+          {/* Revote (Заново) Button in Header */}
+          {hasVoted && (
+            <button
+              type="button"
+              data-testid="header-revote-btn"
+              onClick={triggerRevote}
+              className="btn-ghost-pill text-[11px] sm:text-xs uppercase tracking-[0.15em] py-1 px-2.5 sm:px-3 text-felt-gray hover:text-obsidian hover:bg-obsidian/[0.05] flex items-center gap-1.5 transition-colors cursor-pointer border border-obsidian/20"
+              title="Змінити рішення та запустити вагонетку заново"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Заново</span>
+            </button>
           )}
 
           {/* Ambient Music Toggle */}

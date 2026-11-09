@@ -11,7 +11,7 @@ import { SwitchOperator } from './SwitchOperator';
 import { TrackCharacters } from './TrackCharacters';
 import { TrolleyVehicle } from './TrolleyVehicle';
 import { SCENE_CONFIG } from './nealAssets';
-import { Play, AlertTriangle } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(MotionPathPlugin);
@@ -24,6 +24,7 @@ export interface TrolleySceneProps {
   animationComplete?: boolean;
   onPhaseChange?: (phase: ExperimentPhase) => void;
   onStartExperiment?: () => void;
+  onSelectChoice?: (choice: Choice) => void;
   onAnimationEnd?: () => void;
   reducedMotion?: boolean;
 }
@@ -35,6 +36,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
   animationComplete = false,
   onPhaseChange,
   onStartExperiment,
+  onSelectChoice,
   onAnimationEnd,
   reducedMotion = false,
 }) => {
@@ -300,6 +302,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
   const isMoving =
     currentPhase === 'intro-animation' || currentPhase === 'outcome-animation';
   const isPaused = currentPhase === 'decision-pause';
+  const isSubmitting = submissionState === 'submitting';
   const leverSwitched =
     (currentPhase === 'switching' ||
       currentPhase === 'outcome-animation' ||
@@ -308,10 +311,14 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
   return (
     <div
-      className={`relative w-full border-none shadow-none bg-transparent overflow-visible select-none transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+      className={`relative mx-auto border-none shadow-none bg-transparent select-none transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
         screenShake && !reducedMotion ? 'animate-shake' : ''
       }`}
-      style={{ aspectRatio: SCENE_CONFIG.aspectRatio }}
+      style={{
+        aspectRatio: SCENE_CONFIG.aspectRatio,
+        maxHeight: 'calc(100vh - 210px)',
+        width: 'min(100%, calc((100vh - 210px) * 2.3039))',
+      }}
     >
       {/* Screen reader narration */}
       <div className="sr-only" aria-live="polite">
@@ -394,12 +401,12 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
       {/* Floating Button for Idle State: "Почати експеримент" */}
       {currentPhase === 'idle' && (
-        <div className="absolute inset-x-0 bottom-8 flex flex-col items-center justify-center p-4 text-center z-20 pointer-events-none transition-opacity">
+        <div className="absolute inset-x-0 bottom-6 sm:bottom-8 flex flex-col items-center justify-center p-4 text-center z-20 pointer-events-none transition-opacity">
           <button
             type="button"
             data-testid="start-experiment-button"
             onClick={onStartExperiment}
-            className="pointer-events-auto btn-ghost-pill text-sm uppercase tracking-[0.2em] font-medium py-3.5 px-10 shadow-lg bg-paper/90 backdrop-blur-md border border-obsidian/20 hover:bg-obsidian hover:text-paper transition-all transform hover:scale-105"
+            className="pointer-events-auto btn-ghost-pill text-sm uppercase tracking-[0.2em] font-medium py-3 px-8 shadow-lg bg-paper/90 backdrop-blur-md border border-obsidian/20 hover:bg-obsidian hover:text-paper transition-all transform hover:scale-105"
           >
             <Play className="w-4 h-4 fill-current mr-2" />
             Почати експеримент
@@ -407,17 +414,82 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
         </div>
       )}
 
-      {/* Dramatic Decision Pause Banner (Positioned in lower-left clear space without obscuring vehicle or operator) */}
+      {/* In-Scene Elegant Decision Choice HUD: Positioned cleanly in the bottom-left empty zone without obstructing tracks or people */}
       {currentPhase === 'decision-pause' && (
-        <div className="absolute bottom-4 left-4 sm:left-6 z-20 bg-obsidian text-paper px-5 py-2.5 rounded-full font-sans text-xs sm:text-sm tracking-wide flex items-center gap-2.5 animate-pulse shadow-xl border border-obsidian/20 max-w-[90%] sm:max-w-md text-left">
-          <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
-          <span className="font-medium">
-            Попереду пʼятеро людей. Ви можете перевести стрілку, але тоді під загрозою опиниться одна людина.
-          </span>
+        <div
+          data-testid="scene-decision-hud"
+          className="absolute bottom-3 left-3 right-3 sm:right-auto sm:bottom-5 sm:left-6 z-30 sm:max-w-[420px] pointer-events-auto transition-all duration-500 ease-out animate-fadeIn"
+        >
+          <div className="bg-paper/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-obsidian/20 shadow-2xl flex flex-col">
+            {/* Header / Dilemma Prompt */}
+            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-obsidian/10">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-obsidian font-semibold">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block" />
+                Час вирішувати
+              </span>
+              <span className="text-[10px] font-mono text-felt-gray uppercase tracking-widest">
+                Клавіші [1] / [2]
+              </span>
+            </div>
+
+            {/* Neutral, Balanced Dual Choice Buttons */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5 w-full">
+              {/* Choice 1: Stay */}
+              <button
+                type="button"
+                data-testid="scene-choice-stay-button"
+                onClick={() => onSelectChoice && onSelectChoice('stay')}
+                disabled={isSubmitting}
+                className="group relative flex flex-col justify-between p-2.5 rounded-xl border border-obsidian/20 bg-paper/60 hover:bg-obsidian hover:text-paper transition-all duration-200 text-left cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-felt-gray group-hover:text-paper/80">
+                    Пряма колія
+                  </span>
+                  <kbd className="px-1.5 py-0.5 rounded border border-obsidian/25 bg-obsidian/5 group-hover:border-paper/40 group-hover:bg-paper/20 group-hover:text-paper text-[9px] font-mono font-bold text-obsidian">
+                    1
+                  </kbd>
+                </div>
+                <div className="font-semibold text-xs leading-tight text-obsidian group-hover:text-paper">
+                  Не втручатися
+                </div>
+                <div className="text-[10px] text-felt-gray group-hover:text-paper/80 mt-1 leading-tight">
+                  Загине 5 людей
+                </div>
+              </button>
+
+              {/* Choice 2: Switch */}
+              <button
+                type="button"
+                data-testid="scene-choice-switch-button"
+                onClick={() => onSelectChoice && onSelectChoice('switch')}
+                disabled={isSubmitting}
+                className="group relative flex flex-col justify-between p-2.5 rounded-xl border border-obsidian/20 bg-paper/60 hover:bg-obsidian hover:text-paper transition-all duration-200 text-left cursor-pointer shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-felt-gray group-hover:text-paper/80">
+                    Бокова колія
+                  </span>
+                  <kbd className="px-1.5 py-0.5 rounded border border-obsidian/25 bg-obsidian/5 group-hover:border-paper/40 group-hover:bg-paper/20 group-hover:text-paper text-[9px] font-mono font-bold text-obsidian">
+                    2
+                  </kbd>
+                </div>
+                <div className="font-semibold text-xs leading-tight text-obsidian group-hover:text-paper">
+                  Потягнути важіль
+                </div>
+                <div className="text-[10px] text-felt-gray group-hover:text-paper/80 mt-1 leading-tight">
+                  Загине 1 людина
+                </div>
+              </button>
+            </div>
+
+            {/* Subtle helper note */}
+            <div className="mt-2 text-[10px] text-felt-gray font-mono text-center">
+              Для розгорнутого аналізу наслідків прогортайте вниз ↓
+            </div>
+          </div>
         </div>
       )}
-
-
     </div>
   );
 };

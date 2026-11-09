@@ -82,4 +82,6 @@ export interface EthicalExplanation {
   detailedAnalysis: string;
   omissionBiasExplanation: string;
   quote: string;
+  psychologicalMechanism?: string;
+  neurobiology?: string;
 }

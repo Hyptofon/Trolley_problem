@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { SoundProvider } from '@/components/SoundProvider';
+import { ExperimentProvider } from '@/components/ExperimentProvider';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -63,20 +64,22 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <SoundProvider>
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-6 focus:py-2 focus:bg-obsidian focus:text-paper focus:font-medium focus:text-xs focus:uppercase focus:tracking-widest"
-            >
-              Перейти до основного вмісту
-            </a>
+            <ExperimentProvider>
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-6 focus:py-2 focus:bg-obsidian focus:text-paper focus:font-medium focus:text-xs focus:uppercase focus:tracking-widest"
+              >
+                Перейти до основного вмісту
+              </a>
 
-            <Header />
+              <Header />
 
-            <div id="main-content" className="flex-1 flex flex-col w-full">
-              {children}
-            </div>
+              <div id="main-content" className="flex-1 flex flex-col w-full">
+                {children}
+              </div>
 
-            <Footer />
+              <Footer />
+            </ExperimentProvider>
           </SoundProvider>
         </ThemeProvider>
       </body>
