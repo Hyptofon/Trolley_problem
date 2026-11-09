@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Lock, Eye, EyeOff, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 
 interface AdminLoginFormProps {
   onLogin: (password: string) => Promise<void>;
@@ -24,13 +24,14 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto my-12 p-6 sm:p-8 rounded-2xl bg-graphite-900 border border-graphite-700/80 shadow-2xl">
-      <div className="flex flex-col items-center text-center mb-6">
-        <div className="w-12 h-12 rounded-xl bg-graphite-800 border border-graphite-700 flex items-center justify-center text-trolley-amber mb-3 shadow">
-          <ShieldCheck className="w-6 h-6" />
-        </div>
-        <h2 className="text-2xl font-bold text-white">Вхід для організатора</h2>
-        <p className="text-sm text-graphite-400 mt-1">
+    <div className="w-full max-w-md mx-auto my-16 p-8 sm:p-10 rounded-none border border-obsidian bg-paper shadow-none transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]">
+      <div className="flex flex-col items-center text-center mb-8">
+        <span className="w-2.5 h-2.5 bg-obsidian inline-block mb-3" />
+        <span className="text-[11px] uppercase tracking-[0.25em] font-mono text-felt-gray mb-2 block">
+          [ Захищений доступ ]
+        </span>
+        <h2 className="text-3xl sm:text-4xl font-light text-obsidian tracking-tight">Вхід для організатора</h2>
+        <p className="text-xs text-felt-gray mt-2 leading-relaxed font-light">
           Введіть пароль для доступу до повної статистики голосування
         </p>
       </div>
@@ -39,23 +40,23 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
         <div
           role="alert"
           data-testid="admin-login-error"
-          className="mb-5 p-3.5 rounded-xl bg-red-950/60 border border-red-700/80 text-red-200 text-sm flex items-start gap-2.5"
+          className="mb-6 p-4 rounded-none border border-obsidian bg-obsidian/[0.03] text-obsidian text-xs font-mono flex items-start gap-2.5"
         >
-          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 text-obsidian flex-shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label
             htmlFor="admin-password-input"
-            className="block text-xs uppercase tracking-wider font-semibold text-graphite-300 mb-2"
+            className="block text-[11px] uppercase tracking-[0.2em] font-mono text-felt-gray mb-2"
           >
             Пароль доступу
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-graphite-500">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-felt-gray">
               <Lock className="w-4 h-4" />
             </div>
             <input
@@ -68,13 +69,13 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
               required
               autoFocus
               disabled={isLoading}
-              className="w-full pl-9 pr-10 py-2.5 rounded-xl bg-graphite-950 border border-graphite-700 text-white placeholder-graphite-500 focus:border-trolley-amber focus:ring-1 focus:ring-trolley-amber text-sm transition-colors"
+              className="w-full pl-10 pr-10 py-3 rounded-none bg-paper border border-obsidian/30 text-obsidian placeholder-felt-gray focus:border-obsidian focus:outline-none text-sm transition-colors font-mono"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               disabled={isLoading}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-graphite-400 hover:text-white"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-felt-gray hover:text-obsidian"
               aria-label={showPassword ? 'Приховати пароль' : 'Показати пароль'}
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -86,11 +87,11 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
           type="submit"
           data-testid="admin-login-submit"
           disabled={isLoading || !password.trim()}
-          className="w-full py-2.5 px-4 rounded-xl bg-trolley-amber hover:bg-amber-500 text-graphite-950 font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-amber-950/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="btn-ghost-pill w-full py-3.5 text-xs uppercase tracking-[0.2em] bg-obsidian text-paper hover:bg-paper hover:text-obsidian disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
               <span>Перевірка...</span>
             </>
           ) : (
@@ -101,4 +102,3 @@ export const AdminLoginForm: React.FC<AdminLoginFormProps> = ({
     </div>
   );
 };
-

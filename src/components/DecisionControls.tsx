@@ -2,7 +2,7 @@
 
 import React, { useEffect, useCallback } from 'react';
 import { Choice, VoteSubmissionState, ExperimentPhase } from '@/lib/shared/types';
-import { ShieldAlert, GitFork, Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle, ArrowRightLeft, ShieldAlert, Sparkles } from 'lucide-react';
 
 interface DecisionControlsProps {
   onSelect: (choice: Choice) => void;
@@ -22,7 +22,6 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
   // Global hotkeys [1] / [A] for stay, [2] / [B] for switch
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
@@ -53,122 +52,255 @@ export const DecisionControls: React.FC<DecisionControlsProps> = ({
   return (
     <section
       aria-labelledby="decisions-heading"
-      className="w-full max-w-4xl mx-auto my-6 transition-all duration-300"
+      className="w-full px-2 sm:px-4 md:px-8 mx-auto my-8 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"
     >
-      <div className="flex items-center justify-between mb-3 px-1">
-        <h2 id="decisions-heading" className="text-xs uppercase tracking-widest font-mono text-graphite-400">
-          Варіанти морального вибору
-        </h2>
-        <span className="hidden sm:inline-flex items-center gap-2 text-xs font-mono text-graphite-400">
+      {/* Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 border-b border-obsidian/10 pb-4">
+        <div>
+          <h2
+            id="decisions-heading"
+            className="text-base sm:text-lg font-medium text-obsidian tracking-tight flex items-center gap-2"
+          >
+            <span>Два незворотні рішення</span>
+            {isHighlighted && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 animate-pulse">
+                Ваш вибір вирішує долю
+              </span>
+            )}
+          </h2>
+          <p className="text-xs sm:text-sm text-felt-gray mt-0.5">
+            {isHighlighted
+              ? "Попереду пʼятеро людей. Ви можете перевести стрілку, але тоді під загрозою опиниться одна людина."
+              : 'Оберіть один із варіантів для запуску наслідку експерименту'}
+          </p>
+        </div>
+
+        <span className="inline-flex items-center gap-2 text-xs font-mono text-felt-gray uppercase tracking-wider">
           <span>Гарячі клавіші:</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-graphite-800 border border-graphite-700 text-graphite-300">[1]</kbd>
-          <span>або</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-graphite-800 border border-graphite-700 text-graphite-300">[2]</kbd>
+          <kbd className="px-2 py-0.5 rounded-none border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 text-[10px] font-mono font-semibold">
+            1
+          </kbd>
+          <span>/</span>
+          <kbd className="px-2 py-0.5 rounded-none border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 text-[10px] font-mono font-semibold">
+            2
+          </kbd>
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        {/* Option 1: Stay */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+        {/* Option 1: Stay (Не втручатися) - Crimson / Rose Palette */}
         <button
           type="button"
           data-testid="choice-stay-button"
           onClick={() => onSelect('stay')}
           disabled={isSubmitting}
           aria-pressed={activeChoice === 'stay'}
-          className={`group relative text-left p-5 sm:p-6 rounded-2xl border-2 transition-all duration-200 ${
+          className={`group relative text-left rounded-none border-2 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] overflow-hidden cursor-pointer ${
             activeChoice === 'stay'
-              ? 'bg-graphite-850 border-red-500 shadow-xl shadow-red-950/50 ring-2 ring-red-500/50'
-              : isHighlighted
-              ? 'bg-graphite-900 border-graphite-700 hover:border-red-500/80 hover:bg-graphite-850 shadow-lg'
-              : 'bg-graphite-900/90 border-graphite-750 hover:border-red-500/60 hover:bg-graphite-850'
-          } ${
-            isSubmitting
-              ? 'opacity-60 cursor-not-allowed'
-              : 'cursor-pointer active:scale-[0.99]'
-          }`}
+              ? 'bg-gradient-to-br from-rose-950 via-red-950 to-neutral-950 text-white border-rose-500 ring-4 ring-rose-500/30 shadow-[0_12px_40px_rgba(244,63,94,0.25)]'
+              : 'bg-white dark:bg-[#161214] text-obsidian border-rose-200 dark:border-rose-900/60 hover:border-rose-500 hover:shadow-[0_10px_35px_rgba(244,63,94,0.15)]'
+          } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-red-400 mb-1">
-                <ShieldAlert className="w-4 h-4" aria-hidden="true" />
-                Рішення 1
-              </span>
-              <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-red-200 transition-colors">
+          {/* Top Decorative Gradient Accent */}
+          <div className="h-2 w-full bg-gradient-to-r from-amber-500 via-rose-500 to-red-600" />
+
+          <div className="p-7 sm:p-9 flex flex-col justify-between h-[calc(100%-8px)]">
+            <div>
+              {/* Badge & Key Indicator */}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.15em] font-semibold border ${
+                    activeChoice === 'stay'
+                      ? 'bg-rose-900/80 text-rose-200 border-rose-600'
+                      : 'bg-rose-50 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300 border-rose-300 dark:border-rose-800'
+                  }`}
+                >
+                  <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
+                  Рішення 01 · Бездіяльність
+                </span>
+
+                {isSubmitting && activeChoice === 'stay' ? (
+                  <Loader2 className="w-6 h-6 animate-spin text-rose-400 flex-shrink-0" />
+                ) : (
+                  <span
+                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 transition-transform group-hover:scale-110 ${
+                      activeChoice === 'stay'
+                        ? 'border-white bg-rose-600 text-white'
+                        : 'border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:border-rose-700 dark:text-rose-300'
+                    }`}
+                  >
+                    1
+                  </span>
+                )}
+              </div>
+
+              {/* Title */}
+              <h3
+                className={`text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors ${
+                  activeChoice === 'stay'
+                    ? 'text-white'
+                    : 'text-neutral-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400'
+                }`}
+              >
                 Не втручатися
               </h3>
+
+              {/* Consequence Alert Pill */}
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-900 dark:bg-red-950/80 dark:text-red-200 border border-red-300 dark:border-red-800">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+                <span>Наслідок: загине 5 людей на основній колії</span>
+              </div>
+
+              {/* Description Body */}
+              <p
+                className={`mt-5 text-sm sm:text-base leading-relaxed font-normal ${
+                  activeChoice === 'stay'
+                    ? 'text-rose-100/90'
+                    : 'text-neutral-700 dark:text-neutral-300'
+                }`}
+              >
+                Дозволити вагонетці продовжити прямий рух. Під фатальним ударом залишаються{' '}
+                <strong
+                  className={`font-semibold ${
+                    activeChoice === 'stay'
+                      ? 'text-white underline decoration-rose-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}
+                >
+                  пʼятеро людей
+                </strong>
+                . Ви свідомо не торкаєтеся стрілки, уникаючи прямої дії та перекладання шкоди на
+                іншу людину.
+              </p>
             </div>
-            {isSubmitting && activeChoice === 'stay' ? (
-              <Loader2 className="w-6 h-6 text-red-400 animate-spin flex-shrink-0" />
-            ) : (
-              <span className="w-8 h-8 rounded-full bg-graphite-800 border border-graphite-700 flex items-center justify-center text-xs font-mono text-graphite-300 group-hover:border-red-500/60 group-hover:text-red-400">
-                1
+
+            {/* Bottom Meta & Action Call */}
+            <div
+              className={`mt-8 pt-4 border-t flex items-center justify-between text-xs font-mono uppercase tracking-wider ${
+                activeChoice === 'stay'
+                  ? 'border-rose-800 text-rose-200'
+                  : 'border-rose-100 dark:border-rose-950 text-felt-gray'
+              }`}
+            >
+              <span className="text-[11px]">Кантіанська деонтологія</span>
+              <span
+                className={`inline-flex items-center gap-1.5 font-bold transition-transform group-hover:translate-x-1 ${
+                  activeChoice === 'stay'
+                    ? 'text-white'
+                    : 'text-rose-600 dark:text-rose-400'
+                }`}
+              >
+                Обрати [1] →
               </span>
-            )}
-          </div>
-
-          <p className="mt-3 text-sm text-graphite-300 leading-relaxed">
-            Дозволити вагонетці продовжити рух основною колією. Під прямою загрозою залишаються{' '}
-            <strong className="text-red-400 font-semibold">пʼятеро людей</strong>. Ви не торкаєтеся важеля та
-            уникаєте прямої фізичної дії.
-          </p>
-
-          <div className="mt-4 pt-3 border-t border-graphite-800/80 flex items-center justify-between text-xs text-graphite-400">
-            <span className="text-red-400/90 font-medium">Наслідок: загроза 5 людям</span>
-            <span className="text-graphite-400 font-medium group-hover:text-white transition-colors flex items-center gap-1">
-              Обрати <span aria-hidden="true">→</span>
-            </span>
+            </div>
           </div>
         </button>
 
-        {/* Option 2: Switch */}
+        {/* Option 2: Switch (Перевести стрілку) - Emerald / Teal Palette */}
         <button
           type="button"
           data-testid="choice-switch-button"
           onClick={() => onSelect('switch')}
           disabled={isSubmitting}
           aria-pressed={activeChoice === 'switch'}
-          className={`group relative text-left p-5 sm:p-6 rounded-2xl border-2 transition-all duration-200 ${
+          className={`group relative text-left rounded-none border-2 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] overflow-hidden cursor-pointer ${
             activeChoice === 'switch'
-              ? 'bg-graphite-850 border-sky-400 shadow-xl shadow-sky-950/50 ring-2 ring-sky-400/50'
-              : isHighlighted
-              ? 'bg-graphite-900 border-graphite-700 hover:border-sky-400/80 hover:bg-graphite-850 shadow-lg'
-              : 'bg-graphite-900/90 border-graphite-750 hover:border-sky-400/60 hover:bg-graphite-850'
-          } ${
-            isSubmitting
-              ? 'opacity-60 cursor-not-allowed'
-              : 'cursor-pointer active:scale-[0.99]'
-          }`}
+              ? 'bg-gradient-to-br from-emerald-950 via-teal-950 to-neutral-950 text-white border-emerald-500 ring-4 ring-emerald-500/30 shadow-[0_12px_40px_rgba(16,185,129,0.25)]'
+              : 'bg-white dark:bg-[#101614] text-obsidian border-emerald-200 dark:border-emerald-900/60 hover:border-emerald-500 hover:shadow-[0_10px_35px_rgba(16,185,129,0.15)]'
+          } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-sky-400 mb-1">
-                <GitFork className="w-4 h-4" aria-hidden="true" />
-                Рішення 2
-              </span>
-              <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-sky-200 transition-colors">
+          {/* Top Decorative Gradient Accent */}
+          <div className="h-2 w-full bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-500" />
+
+          <div className="p-7 sm:p-9 flex flex-col justify-between h-[calc(100%-8px)]">
+            <div>
+              {/* Badge & Key Indicator */}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.15em] font-semibold border ${
+                    activeChoice === 'switch'
+                      ? 'bg-emerald-900/80 text-emerald-200 border-emerald-600'
+                      : 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                  }`}
+                >
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-500" />
+                  Рішення 02 · Переведення стрілки
+                </span>
+
+                {isSubmitting && activeChoice === 'switch' ? (
+                  <Loader2 className="w-6 h-6 animate-spin text-emerald-400 flex-shrink-0" />
+                ) : (
+                  <span
+                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 transition-transform group-hover:scale-110 ${
+                      activeChoice === 'switch'
+                        ? 'border-white bg-emerald-600 text-white'
+                        : 'border-emerald-400 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:border-emerald-700 dark:text-emerald-300'
+                    }`}
+                  >
+                    2
+                  </span>
+                )}
+              </div>
+
+              {/* Title */}
+              <h3
+                className={`text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight transition-colors ${
+                  activeChoice === 'switch'
+                    ? 'text-white'
+                    : 'text-neutral-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+                }`}
+              >
                 Перевести стрілку
               </h3>
+
+              {/* Consequence Alert Pill */}
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Наслідок: 5 людей врятовано · 1 загине</span>
+              </div>
+
+              {/* Description Body */}
+              <p
+                className={`mt-5 text-sm sm:text-base leading-relaxed font-normal ${
+                  activeChoice === 'switch'
+                    ? 'text-emerald-100/90'
+                    : 'text-neutral-700 dark:text-neutral-300'
+                }`}
+              >
+                Потягнути важіль і повернути вагонетку на бічну колію.{' '}
+                <strong
+                  className={`font-semibold ${
+                    activeChoice === 'switch'
+                      ? 'text-white underline decoration-emerald-400'
+                      : 'text-emerald-600 dark:text-emerald-400'
+                  }`}
+                >
+                  Пʼятьох людей буде врятовано
+                </strong>
+                , проте загине одна людина. Ви берете активну моральну відповідальність заради
+                мінімізації загальних людських втрат.
+              </p>
             </div>
-            {isSubmitting && activeChoice === 'switch' ? (
-              <Loader2 className="w-6 h-6 text-sky-400 animate-spin flex-shrink-0" />
-            ) : (
-              <span className="w-8 h-8 rounded-full bg-graphite-800 border border-graphite-700 flex items-center justify-center text-xs font-mono text-graphite-300 group-hover:border-sky-400/60 group-hover:text-sky-400">
-                2
+
+            {/* Bottom Meta & Action Call */}
+            <div
+              className={`mt-8 pt-4 border-t flex items-center justify-between text-xs font-mono uppercase tracking-wider ${
+                activeChoice === 'switch'
+                  ? 'border-emerald-800 text-emerald-200'
+                  : 'border-emerald-100 dark:border-emerald-950 text-felt-gray'
+              }`}
+            >
+              <span className="text-[11px]">Утилітаризм Бентама</span>
+              <span
+                className={`inline-flex items-center gap-1.5 font-bold transition-transform group-hover:translate-x-1 ${
+                  activeChoice === 'switch'
+                    ? 'text-white'
+                    : 'text-emerald-600 dark:text-emerald-400'
+                }`}
+              >
+                Обрати [2] →
               </span>
-            )}
-          </div>
-
-          <p className="mt-3 text-sm text-graphite-300 leading-relaxed">
-            Потягнути важіль і спрямувати вагонетку на бокову колію. Під загрозою опиняється{' '}
-            <strong className="text-sky-400 font-semibold">одна людина</strong>, але це рятує життя
-            пʼятьох на основній колії.
-          </p>
-
-          <div className="mt-4 pt-3 border-t border-graphite-800/80 flex items-center justify-between text-xs text-graphite-400">
-            <span className="text-sky-400/90 font-medium">Наслідок: загроза 1 людині</span>
-            <span className="text-graphite-400 font-medium group-hover:text-white transition-colors flex items-center gap-1">
-              Обрати <span aria-hidden="true">→</span>
-            </span>
+            </div>
           </div>
         </button>
       </div>

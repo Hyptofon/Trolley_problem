@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import '@/index.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { SoundProvider } from '@/components/SoundProvider';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -36,24 +38,47 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="uk" className="dark">
+    <html lang="uk" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var stored = localStorage.getItem('trolley-theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (stored === 'dark' || (!stored && prefersDark)) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('light');
+                } else {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans bg-graphite-950 text-graphite-100 antialiased min-h-screen flex flex-col selection:bg-trolley-amber/30 selection:text-trolley-amber`}
+        className={`${inter.variable} ${jetbrainsMono.variable} font-sans bg-paper text-obsidian antialiased min-h-screen flex flex-col selection:bg-obsidian selection:text-paper`}
       >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-trolley-amber focus:text-graphite-950 focus:font-bold focus:rounded-lg focus:shadow-xl"
-        >
-          Перейти до основного вмісту
-        </a>
+        <ThemeProvider>
+          <SoundProvider>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-6 focus:py-2 focus:bg-obsidian focus:text-paper focus:font-medium focus:text-xs focus:uppercase focus:tracking-widest"
+            >
+              Перейти до основного вмісту
+            </a>
 
-        <Header />
+            <Header />
 
-        <div id="main-content" className="flex-1 flex flex-col">
-          {children}
-        </div>
+            <div id="main-content" className="flex-1 flex flex-col w-full">
+              {children}
+            </div>
 
-        <Footer />
+            <Footer />
+          </SoundProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

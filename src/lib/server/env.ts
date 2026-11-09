@@ -44,11 +44,12 @@ export function getServerEnv(): ServerEnvConfig {
     process.env.REDIS_KEY_PREFIX ||
     (isProduction ? 'trolley:production:v1' : 'trolley:development:v1');
 
-  // DEMO_MODE is ONLY permitted in development and test environments
+  // DEMO_MODE is permitted in development and test environments
+  // If Redis credentials are not provided in development, automatically default to in-memory mode
   const isDemoMode =
     !isProduction &&
     (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') &&
-    process.env.DEMO_MODE === 'true';
+    (process.env.DEMO_MODE === 'true' || (!redisRestUrl && !redisRestToken));
 
   // In production or preview on Vercel without DEMO_MODE, fail closed if Redis is missing
   if (isProduction && (!redisRestUrl || !redisRestToken)) {

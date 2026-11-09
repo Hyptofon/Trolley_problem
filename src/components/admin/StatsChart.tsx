@@ -16,7 +16,7 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats, large = false }) 
   const switchHeightPct = total > 0 ? (switchCount / maxCount) * 100 : 0;
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8">
       {/* Screen reader table fallback */}
       <table className="sr-only">
         <caption>Статистика відповідей на проблему вагонетки</caption>
@@ -48,14 +48,14 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats, large = false }) 
 
       {/* Proportional Split Bar */}
       <div>
-        <div className="flex justify-between items-center text-xs font-semibold text-graphite-300 mb-2">
-          <span className="flex items-center gap-1.5 text-red-400">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
+        <div className="flex justify-between items-center text-xs font-mono uppercase tracking-[0.15em] text-felt-gray mb-3">
+          <span className="flex items-center gap-2 text-obsidian">
+            <span className="w-2.5 h-2.5 bg-obsidian inline-block" />
             Не втручатися: {stayPercent}% ({stay})
           </span>
-          <span className="flex items-center gap-1.5 text-sky-400">
+          <span className="flex items-center gap-2 text-obsidian">
             Перевести стрілку: {switchPercent}% ({switchCount})
-            <span className="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block" />
+            <span className="w-2.5 h-2.5 border border-obsidian bg-paper inline-block" />
           </span>
         </div>
 
@@ -65,22 +65,22 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats, large = false }) 
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label="Співвідношення виборів"
-          className="w-full h-5 sm:h-7 bg-graphite-800 rounded-full overflow-hidden flex p-0.5 border border-graphite-700"
+          className="w-full h-6 sm:h-8 rounded-[75px] overflow-hidden flex border border-obsidian bg-paper p-0.5"
         >
           {total === 0 ? (
-            <div className="w-full h-full bg-graphite-700/50 rounded-full flex items-center justify-center text-[10px] text-graphite-400">
+            <div className="w-full h-full rounded-[75px] flex items-center justify-center text-[10px] uppercase font-mono tracking-widest text-felt-gray">
               Немає голосів
             </div>
           ) : (
             <>
               <div
                 style={{ width: `${stayPercent}%` }}
-                className="h-full bg-gradient-to-r from-red-600 to-red-500 rounded-l-full transition-all duration-700"
+                className="h-full bg-obsidian rounded-l-[75px] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"
                 title={`Не втручатися: ${stayPercent}%`}
               />
               <div
                 style={{ width: `${switchPercent}%` }}
-                className="h-full bg-gradient-to-r from-sky-500 to-sky-400 rounded-r-full transition-all duration-700"
+                className="h-full bg-ash-mist/30 rounded-r-[75px] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"
                 title={`Перевести стрілку: ${switchPercent}%`}
               />
             </>
@@ -90,69 +90,69 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats, large = false }) 
 
       {/* Comparative Column Visualizer */}
       <div
-        className={`w-full rounded-xl bg-graphite-950/70 border border-graphite-800 p-4 sm:p-6 flex flex-col justify-end ${
-          large ? 'h-72 sm:h-96' : 'h-52 sm:h-64'
+        className={`w-full rounded-none border border-obsidian/10 bg-obsidian/[0.02] p-6 sm:p-10 flex flex-col justify-end ${
+          large ? 'h-80 sm:h-[420px]' : 'h-60 sm:h-72'
         }`}
       >
-        <div className="w-full h-full flex items-end justify-around gap-4 sm:gap-12 pt-6">
+        <div className="w-full h-full flex items-end justify-around gap-6 sm:gap-16 pt-8">
           {/* Stay Bar */}
-          <div className="flex-1 max-w-[140px] flex flex-col items-center h-full justify-end group">
+          <div className="flex-1 max-w-[160px] flex flex-col items-center h-full justify-end group">
             <span
-              className={`font-mono font-bold text-red-400 mb-2 transition-all ${
-                large ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'
+              className={`font-mono font-light text-obsidian mb-3 transition-all ${
+                large ? 'text-3xl sm:text-5xl' : 'text-xl sm:text-3xl'
               }`}
             >
               {stayPercent}%
             </span>
-            <div className="w-full bg-graphite-850 rounded-t-lg overflow-hidden flex flex-col justify-end h-full max-h-[80%] border border-graphite-700/60">
+            <div className="w-full bg-paper rounded-none overflow-hidden flex flex-col justify-end h-full max-h-[75%] border border-obsidian">
               <div
                 style={{ height: `${Math.max(4, stayHeightPct)}%` }}
-                className="w-full bg-gradient-to-t from-red-700 to-red-500 rounded-t transition-all duration-700 group-hover:brightness-110 flex items-center justify-center"
+                className="w-full bg-obsidian rounded-none transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center"
               >
-                <span className="text-white text-xs font-mono font-bold px-1 select-none">
+                <span className="text-paper text-xs font-mono font-medium px-1 select-none">
                   {stay}
                 </span>
               </div>
             </div>
             <span
-              className={`mt-2 font-medium text-center text-graphite-300 ${
-                large ? 'text-sm sm:text-base' : 'text-xs'
+              className={`mt-4 font-light text-center text-obsidian ${
+                large ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
               }`}
             >
               Не втручатися
             </span>
-            <span className="text-[11px] text-graphite-400 font-mono">
+            <span className="text-[11px] text-felt-gray font-mono mt-0.5">
               ({stay} голосів)
             </span>
           </div>
 
           {/* Switch Bar */}
-          <div className="flex-1 max-w-[140px] flex flex-col items-center h-full justify-end group">
+          <div className="flex-1 max-w-[160px] flex flex-col items-center h-full justify-end group">
             <span
-              className={`font-mono font-bold text-sky-400 mb-2 transition-all ${
-                large ? 'text-2xl sm:text-3xl' : 'text-lg sm:text-xl'
+              className={`font-mono font-light text-obsidian mb-3 transition-all ${
+                large ? 'text-3xl sm:text-5xl' : 'text-xl sm:text-3xl'
               }`}
             >
               {switchPercent}%
             </span>
-            <div className="w-full bg-graphite-850 rounded-t-lg overflow-hidden flex flex-col justify-end h-full max-h-[80%] border border-graphite-700/60">
+            <div className="w-full bg-paper rounded-none overflow-hidden flex flex-col justify-end h-full max-h-[75%] border border-obsidian">
               <div
                 style={{ height: `${Math.max(4, switchHeightPct)}%` }}
-                className="w-full bg-gradient-to-t from-sky-600 to-sky-400 rounded-t transition-all duration-700 group-hover:brightness-110 flex items-center justify-center"
+                className="w-full bg-ash-mist/40 rounded-none transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center border-t border-obsidian"
               >
-                <span className="text-white text-xs font-mono font-bold px-1 select-none">
+                <span className="text-obsidian text-xs font-mono font-medium px-1 select-none">
                   {switchCount}
                 </span>
               </div>
             </div>
             <span
-              className={`mt-2 font-medium text-center text-graphite-300 ${
-                large ? 'text-sm sm:text-base' : 'text-xs'
+              className={`mt-4 font-light text-center text-obsidian ${
+                large ? 'text-base sm:text-lg' : 'text-xs sm:text-sm'
               }`}
             >
               Перевести стрілку
             </span>
-            <span className="text-[11px] text-graphite-400 font-mono">
+            <span className="text-[11px] text-felt-gray font-mono mt-0.5">
               ({switchCount} голосів)
             </span>
           </div>
@@ -161,4 +161,3 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats, large = false }) 
     </div>
   );
 };
-

@@ -17,7 +17,7 @@ import { TrolleyScene } from '@/components/TrolleyScene';
 import { DecisionControls } from '@/components/DecisionControls';
 import { OutcomeView } from '@/components/OutcomeView';
 import { ErrorAlert } from '@/components/ErrorAlert';
-import { Sparkles, RefreshCw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 
 export default function HomePage() {
   const [phase, setPhase] = useState<ExperimentPhase>('idle');
@@ -155,7 +155,7 @@ export default function HomePage() {
     setPhase('result');
   }, []);
 
-  // Handle Revote: reset experiment to decision-pause or intro so participant can choose again
+  // Handle Revote: reset experiment to decision-pause so participant can choose again
   const handleRevote = useCallback(() => {
     setPhase('decision-pause');
     setSubmissionState('idle');
@@ -166,21 +166,25 @@ export default function HomePage() {
   const isCompleted = phase === 'result' && selectedChoice !== null;
 
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-      {/* Title & Dramatic Dilemma Description */}
-      <section className="text-center mb-6 sm:mb-8" aria-labelledby="dilemma-title">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-graphite-850 border border-graphite-750 text-xs font-mono text-trolley-amber">
-            <Sparkles className="w-3.5 h-3.5" />
-            Філософський експеримент
+    <main className="w-full min-h-screen px-2 sm:px-4 md:px-6 py-3 sm:py-6 flex flex-col items-center relative overflow-x-clip transition-colors duration-700">
+      {/* Background Iridescent Chromatic Atmosphere Wash */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] pointer-events-none opacity-20 -z-10">
+        <div className="w-full h-full iridescent-wash" />
+      </div>
+
+      {/* Editorial Title & Dilemma Statement */}
+      <section className="w-full px-4 sm:px-8 text-center mb-3 sm:mb-5" aria-labelledby="dilemma-title">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-felt-gray">
+            [ Етичний експеримент · 1967 ]
           </span>
           {isCompleted && (
             <button
               type="button"
               onClick={handleRevote}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-graphite-800 hover:bg-graphite-750 border border-graphite-700 text-xs font-mono text-graphite-300 hover:text-white transition-colors"
+              className="btn-ghost-pill text-xs uppercase tracking-[0.15em] py-1 px-4 text-felt-gray hover:text-obsidian hover:bg-obsidian/[0.05]"
             >
-              <RefreshCw className="w-3 h-3 text-trolley-amber" />
+              <RotateCcw className="w-3 h-3 mr-1.5" />
               Змінити вибір
             </button>
           )}
@@ -188,34 +192,36 @@ export default function HomePage() {
 
         <h1
           id="dilemma-title"
-          className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-obsidian text-center leading-tight mb-3"
         >
           Проблема вагонетки
         </h1>
 
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-graphite-300 leading-relaxed">
+        <p className="max-w-3xl mx-auto text-sm sm:text-base md:text-lg text-felt-gray leading-relaxed font-light text-center">
           Некерована важка вагонетка мчить колією на{' '}
-          <strong className="text-red-400 font-semibold">пʼятьох людей</strong>,
+          <strong className="text-obsidian font-medium">пʼятьох людей</strong>,
           які не можуть зійти з рейок. Ви стоїте біля стрілочного важеля. Якщо ви
           потягнете його — вагонетка поверне на бокову колію, де перебуває{' '}
-          <strong className="text-sky-400 font-semibold">одна людина</strong>.
+          <strong className="text-obsidian font-medium">одна людина</strong>.
         </p>
       </section>
 
-      {/* Cinematic SVG Interactive Scene */}
-      <TrolleyScene
-        phase={phase}
-        submissionState={submissionState}
-        selectedChoice={selectedChoice}
-        animationComplete={animationComplete}
-        onPhaseChange={handlePhaseChange}
-        onStartExperiment={handleStartExperiment}
-        onSkipAnimation={handleSkipAnimation}
-        onAnimationEnd={() => {
-          setAnimationComplete(true);
-          setPhase('result');
-        }}
-      />
+      {/* Full-width Wide Cinematic SVG Interactive Scene — Edge to Edge */}
+      <div className="w-full max-w-[1450px] mx-auto my-1 sm:my-2 overflow-visible">
+        <TrolleyScene
+          phase={phase}
+          submissionState={submissionState}
+          selectedChoice={selectedChoice}
+          animationComplete={animationComplete}
+          onPhaseChange={handlePhaseChange}
+          onStartExperiment={handleStartExperiment}
+          onSkipAnimation={handleSkipAnimation}
+          onAnimationEnd={() => {
+            setAnimationComplete(true);
+            setPhase('result');
+          }}
+        />
+      </div>
 
       {/* Screen Reader Live Status Region */}
       <div className="sr-only" role="status" aria-live="assertive">
@@ -228,11 +234,13 @@ export default function HomePage() {
 
       {/* Error state alert banner with retry */}
       {submissionState === 'error' && errorMessage && (
-        <ErrorAlert
-          message={errorMessage}
-          onRetry={handleRetry}
-          isRetrying={false}
-        />
+        <div className="w-full px-2 sm:px-6 mx-auto mt-6">
+          <ErrorAlert
+            message={errorMessage}
+            onRetry={handleRetry}
+            isRetrying={false}
+          />
+        </div>
       )}
 
       {/* Decision Controls or Outcome Analysis */}

@@ -10,11 +10,11 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('Layout Components & 404', () => {
-  it('renders Header with navigation link to admin', () => {
+  it('renders Header with wordmark and theme toggle', () => {
     render(<Header />);
 
     expect(screen.getByText('Проблема вагонетки')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Організатор/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /перемкнути на/i })).toBeInTheDocument();
   });
 
   it('renders Footer with experiment notes', () => {

@@ -9,9 +9,6 @@ import {
   LogOut,
   RefreshCw,
   Tv,
-  Users,
-  ShieldAlert,
-  GitFork,
   AlertCircle,
   Loader2,
   Clock,
@@ -99,28 +96,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-6 sm:my-10 px-4">
+    <div className="w-full max-w-[1340px] mx-auto my-8 px-4 sm:px-8 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-graphite-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-obsidian/10">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-trolley-amber">
-            Адміністративна панель
+          <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-felt-gray block mb-2">
+            [ Адміністративна панель ]
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+          <h1 className="text-3xl sm:text-5xl font-light text-obsidian tracking-tight">
             Статистика дилеми вагонетки
           </h1>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             data-testid="admin-refresh-button"
             onClick={() => loadStats(true)}
             disabled={isRefreshing || isLoading}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-graphite-850 hover:bg-graphite-800 text-graphite-200 hover:text-white border border-graphite-700 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+            className="btn-ghost-pill text-xs uppercase tracking-[0.15em] py-2.5 px-6 disabled:opacity-50"
             title="Оновити зараз"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span>Оновити</span>
           </button>
 
@@ -129,9 +126,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             data-testid="admin-presentation-button"
             onClick={() => setPresentationMode(true)}
             disabled={!stats}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-graphite-850 hover:bg-graphite-800 text-graphite-200 hover:text-white border border-graphite-700 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+            className="btn-ghost-pill text-xs uppercase tracking-[0.15em] py-2.5 px-6 disabled:opacity-50"
           >
-            <Tv className="w-4 h-4 text-trolley-amber" />
+            <Tv className="w-3.5 h-3.5 mr-1.5" />
             <span>Презентація</span>
           </button>
 
@@ -139,9 +136,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             type="button"
             data-testid="admin-logout-button"
             onClick={handleLogout}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 hover:text-red-100 border border-red-800/80 text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+            className="btn-ghost-pill text-xs uppercase tracking-[0.15em] py-2.5 px-6 hover:bg-obsidian hover:text-paper"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5 mr-1.5" />
             <span>Вийти</span>
           </button>
         </div>
@@ -151,17 +148,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       {errorMessage && (
         <div
           role="alert"
-          className="mt-6 p-4 rounded-xl bg-red-950/50 border border-red-700 text-red-200 text-sm flex items-start gap-3"
+          className="mt-6 p-4 rounded-none border border-obsidian bg-obsidian/[0.03] text-obsidian text-xs font-mono flex items-start gap-3"
         >
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 text-obsidian flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="font-semibold text-white">Помилка оновлення даних</p>
-            <p className="mt-0.5">{errorMessage}</p>
+            <p className="font-medium">Помилка оновлення даних</p>
+            <p className="mt-0.5 text-felt-gray">{errorMessage}</p>
           </div>
           <button
             type="button"
             onClick={() => loadStats(true)}
-            className="px-3 py-1 bg-red-800 hover:bg-red-700 text-white rounded text-xs"
+            className="btn-ghost-pill text-xs uppercase tracking-wider py-1 px-3"
           >
             Спробувати знову
           </button>
@@ -170,26 +167,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
       {/* Loading state */}
       {isLoading && !stats ? (
-        <div className="my-16 flex flex-col items-center justify-center text-graphite-400 gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-trolley-amber" />
-          <p className="text-sm">Завантаження актуальних даних з таблиці...</p>
+        <div className="my-20 flex flex-col items-center justify-center text-felt-gray gap-3 font-mono text-xs uppercase tracking-widest">
+          <Loader2 className="w-6 h-6 animate-spin text-obsidian" />
+          <p>Завантаження даних...</p>
         </div>
       ) : stats ? (
-        <div className="space-y-6 mt-6">
+        <div className="space-y-8 mt-8">
           {/* Key Metrics Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {/* Total Votes Card */}
-            <div className="p-5 rounded-2xl bg-graphite-900 border border-graphite-800 shadow">
-              <div className="flex items-center justify-between text-graphite-400 mb-2">
-                <span className="text-xs uppercase font-semibold tracking-wider">
-                  Всього голосів
-                </span>
-                <Users className="w-4 h-4 text-trolley-amber" />
-              </div>
-              <div className="text-3xl sm:text-4xl font-extrabold font-mono text-white" data-testid="stats-total">
+            <div className="p-8 rounded-none border border-obsidian bg-paper">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-felt-gray block mb-3">
+                01 · Всього голосів
+              </span>
+              <div className="text-4xl sm:text-6xl font-light font-mono text-obsidian tracking-tighter" data-testid="stats-total">
                 {stats.total}
               </div>
-              <span className="text-xs text-graphite-400 mt-1 block">
+              <span className="text-xs font-mono text-felt-gray mt-3 block">
                 {stats.total === 0
                   ? 'Очікуємо перших відповідей'
                   : 'Зареєстровано в Upstash Redis'}
@@ -197,66 +191,60 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
 
             {/* Stay Votes Card */}
-            <div className="p-5 rounded-2xl bg-graphite-900 border border-graphite-800 shadow">
-              <div className="flex items-center justify-between text-red-400 mb-2">
-                <span className="text-xs uppercase font-semibold tracking-wider">
-                  Не втручатися
-                </span>
-                <ShieldAlert className="w-4 h-4" />
-              </div>
+            <div className="p-8 rounded-none border border-obsidian bg-paper">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-felt-gray block mb-3">
+                02 · Не втручатися
+              </span>
               <div className="flex items-baseline justify-between">
-                <div className="text-3xl sm:text-4xl font-extrabold font-mono text-white" data-testid="stats-stay-count">
+                <div className="text-4xl sm:text-6xl font-light font-mono text-obsidian tracking-tighter" data-testid="stats-stay-count">
                   {stats.stay}
                 </div>
-                <span className="text-xl font-bold font-mono text-red-400" data-testid="stats-stay-percent">
+                <span className="text-2xl font-light font-mono text-obsidian" data-testid="stats-stay-percent">
                   {stats.stayPercent}%
                 </span>
               </div>
-              <span className="text-xs text-graphite-400 mt-1 block">
+              <span className="text-xs font-mono text-felt-gray mt-3 block">
                 Пряма загроза 5 людям
               </span>
             </div>
 
             {/* Switch Votes Card */}
-            <div className="p-5 rounded-2xl bg-graphite-900 border border-graphite-800 shadow">
-              <div className="flex items-center justify-between text-sky-400 mb-2">
-                <span className="text-xs uppercase font-semibold tracking-wider">
-                  Перевести стрілку
-                </span>
-                <GitFork className="w-4 h-4" />
-              </div>
+            <div className="p-8 rounded-none border border-obsidian bg-paper">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-felt-gray block mb-3">
+                03 · Перевести стрілку
+              </span>
               <div className="flex items-baseline justify-between">
-                <div className="text-3xl sm:text-4xl font-extrabold font-mono text-white" data-testid="stats-switch-count">
+                <div className="text-4xl sm:text-6xl font-light font-mono text-obsidian tracking-tighter" data-testid="stats-switch-count">
                   {stats.switch}
                 </div>
-                <span className="text-xl font-bold font-mono text-sky-400" data-testid="stats-switch-percent">
+                <span className="text-2xl font-light font-mono text-obsidian" data-testid="stats-switch-percent">
                   {stats.switchPercent}%
                 </span>
               </div>
-              <span className="text-xs text-graphite-400 mt-1 block">
+              <span className="text-xs font-mono text-felt-gray mt-3 block">
                 Загроза 1 людині (порятунок 5)
               </span>
             </div>
           </div>
 
           {/* Visual Chart Card */}
-          <div className="p-6 sm:p-8 rounded-2xl bg-graphite-900 border border-graphite-800 shadow-xl">
-            <h2 className="text-lg font-bold text-white mb-6 flex items-center justify-between">
-              <span>Графічний аналіз співвідношення</span>
+          <div className="p-8 sm:p-12 rounded-none border border-obsidian bg-paper">
+            <div className="flex items-center justify-between pb-6 border-b border-obsidian/10 mb-8">
+              <h2 className="text-xl sm:text-2xl font-light text-obsidian tracking-tight">
+                Графічний аналіз співвідношення
+              </h2>
               {stats.total === 0 && (
-                <span className="text-xs font-normal text-graphite-400">
+                <span className="text-xs font-mono uppercase tracking-wider text-felt-gray">
                   Порожній стан
                 </span>
               )}
-            </h2>
+            </div>
 
             {stats.total === 0 ? (
-              <div className="py-12 text-center text-graphite-400">
-                <p className="text-base font-medium text-graphite-300">
-                  Голосів ще не зареєстровано
-                </p>
-                <p className="text-xs text-graphite-400 mt-1">
-                  Коли перший учасник проголосує, тут зʼявиться розподіл відповідей.
+              <div className="py-16 text-center text-felt-gray font-light">
+                <p className="text-lg text-obsidian">Голосів ще не зареєстровано</p>
+                <p className="text-xs font-mono text-felt-gray mt-1">
+                  Після першого голосу тут відобразиться розподіл відповідей.
                 </p>
               </div>
             ) : (
@@ -265,13 +253,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           </div>
 
           {/* Status & Last Updated */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-graphite-400 px-1 pt-2 font-mono">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
-              <span>Автооновлення кожні 15 с (коли сторінка активна)</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono text-felt-gray pt-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-obsidian inline-block" />
+              <span>Автооновлення кожні 15 с (коли вкладка активна)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-graphite-400" />
+              <Clock className="w-3.5 h-3.5" />
               <span>
                 Останнє оновлення: {new Date(stats.updatedAt).toLocaleTimeString('uk-UA')}
               </span>
@@ -282,4 +270,3 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     </div>
   );
 };
-

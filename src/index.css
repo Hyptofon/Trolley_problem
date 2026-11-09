@@ -2,24 +2,145 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Monopo Saigon Core Color Tokens - Light */
+  --color-obsidian-rgb: 0 0 0;
+  --color-paper-rgb: 255 255 255;
+  --color-inkstone-rgb: 24 24 24;
+  --color-felt-gray-rgb: 109 109 109;
+  --color-slate-pill-rgb: 99 99 99;
+  --color-ash-mist-rgb: 154 154 154;
+  --color-pewter-rgb: 128 128 128;
+
+  --color-obsidian: #000000;
+  --color-paper: #ffffff;
+  --color-inkstone: #181818;
+  --color-felt-gray: #6d6d6d;
+  --color-slate-pill: #636363;
+  --color-ash-mist: #9a9a9a;
+  --color-pewter: #808080;
+
+  /* Iridescent Liquid Gradient */
+  --gradient-iridescent-fade: linear-gradient(
+    135deg,
+    rgba(160, 224, 171, 0.25) 0%,
+    rgba(255, 172, 46, 0.2) 45%,
+    rgba(165, 45, 37, 0.25) 100%
+  );
+
+  /* Easing Curve */
+  --ease-monopo: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.dark {
+  /* Monopo Saigon Core Color Tokens - Dark */
+  --color-obsidian-rgb: 245 245 247;
+  --color-paper-rgb: 14 14 17;
+  --color-inkstone-rgb: 24 24 28;
+  --color-felt-gray-rgb: 161 161 170;
+  --color-slate-pill-rgb: 39 39 42;
+  --color-ash-mist-rgb: 113 113 122;
+  --color-pewter-rgb: 140 140 145;
+
+  --color-obsidian: #f5f5f7;
+  --color-paper: #0e0e11;
+  --color-inkstone: #18181c;
+  --color-felt-gray: #a1a1aa;
+  --color-slate-pill: #27272a;
+  --color-ash-mist: #71717a;
+  --color-pewter: #8c8c91;
+
+  --gradient-iridescent-fade: linear-gradient(
+    135deg,
+    rgba(160, 224, 171, 0.12) 0%,
+    rgba(255, 172, 46, 0.1) 45%,
+    rgba(165, 45, 37, 0.12) 100%
+  );
+}
+
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
-
   body {
-    background-color: #0a0d12;
-    color: #e7edf7;
+    background-color: rgb(var(--color-paper-rgb));
+    color: rgb(var(--color-obsidian-rgb));
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
 
-  /* Accessible focus styling */
+  /* Accessible focus styling adhering to monochrome precision */
   *:focus-visible {
-    outline: 2px solid #f59e0b;
-    outline-offset: 2px;
+    outline: 1.5px solid rgb(var(--color-obsidian-rgb));
+    outline-offset: 3px;
   }
 }
 
+/* Monopo Saigon Signature Ghost Pill Button */
+.btn-ghost-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--color-obsidian);
+  color: var(--color-obsidian);
+  border-radius: 75px;
+  padding: 11px 33px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  transition: all 0.8s var(--ease-monopo);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-ghost-pill:hover:not(:disabled) {
+  background: var(--color-obsidian);
+  color: var(--color-paper);
+  letter-spacing: 0.08em;
+  transform: translateY(-1px);
+}
+
+.btn-ghost-pill-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: var(--color-paper);
+  border-radius: 75px;
+  padding: 11px 33px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  transition: all 0.8s var(--ease-monopo);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-ghost-pill-dark:hover:not(:disabled) {
+  border-color: var(--color-paper);
+  background: rgba(255, 255, 255, 0.12);
+  letter-spacing: 0.08em;
+}
+
+/* Sharp Editorial Card with 0px radius and hairline borders */
+.editorial-card {
+  border-radius: 0px !important;
+  border: 1px solid var(--color-obsidian);
+  background: var(--color-paper);
+  box-shadow: none !important;
+  transition: border-color 0.8s var(--ease-monopo), background 0.8s var(--ease-monopo);
+}
+
+/* Liquid iridescent wash background */
+.iridescent-wash {
+  background: var(--gradient-iridescent-fade);
+  filter: blur(80px);
+  opacity: 0.75;
+}
+
+/* Geometric Red Cube Shatter Animation */
 @keyframes shatterParticle {
   0% {
     opacity: 1;
@@ -30,25 +151,27 @@
   }
   100% {
     opacity: 0;
-    transform: scale(0.2) translate(15px, -15px);
+    transform: scale(0.2) translate(18px, -18px);
   }
 }
 
+/* Billowing Steam Puff Animation */
 @keyframes steamPuff {
   0% {
-    opacity: 0.5;
+    opacity: 0.55;
     transform: translate(0, 0) scale(0.6);
   }
   50% {
     opacity: 0.3;
-    transform: translate(-10px, -12px) scale(1.1);
+    transform: translate(-12px, -16px) scale(1.15);
   }
   100% {
     opacity: 0;
-    transform: translate(-20px, -24px) scale(1.5);
+    transform: translate(-26px, -32px) scale(1.6);
   }
 }
 
+/* Screen camera vibration on collision */
 @keyframes shake {
   0%, 100% { transform: translate(0, 0); }
   20% { transform: translate(-3px, 2px); }
@@ -80,4 +203,3 @@
     scroll-behavior: auto !important;
   }
 }
-
