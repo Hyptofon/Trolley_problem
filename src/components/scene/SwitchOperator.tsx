@@ -10,7 +10,7 @@ interface SwitchOperatorProps {
 }
 
 export const SwitchOperator: React.FC<SwitchOperatorProps> = ({
-  isDark = false,
+  isDark: _isDark = false,
   isPaused = false,
   leverSwitched = false,
 }) => {
@@ -77,19 +77,6 @@ export const SwitchOperator: React.FC<SwitchOperatorProps> = ({
           </g>
         </g>
       )}
-
-      {/* Micro Label */}
-      <text
-        x="1008"
-        y="262"
-        textAnchor="middle"
-        fill={isDark ? '#a1a1aa' : '#71717a'}
-        fontSize="11"
-        letterSpacing="0.16em"
-        className="uppercase font-mono font-medium pointer-events-none"
-      >
-        Стрілочник (Ви)
-      </text>
     </g>
   );
 };

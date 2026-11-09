@@ -100,8 +100,8 @@ export const TrackCharacters: React.FC<TrackCharactersProps> = ({
         </g>
       )}
 
-      {/* Badge for 1 Person (Positioned above person's head for clear visibility) */}
-      <g transform="translate(1620, 150)" className="pointer-events-none">
+      {/* Badge for 1 Person (Positioned directly underneath the person, mirroring the 5-people badge) */}
+      <g transform="translate(1500, 460)" className="pointer-events-none">
         <rect
           x="-95"
           y="-20"
