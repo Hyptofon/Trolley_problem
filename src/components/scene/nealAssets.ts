@@ -15,17 +15,17 @@ export const SCENE_CONFIG = {
   splatFiveOffset: { x: 1330, y: 570 },
   splatOneOffset: { x: 1430, y: 260 },
   trolleyPositions: {
-    idle: { x: -280, y: -108 },
+    idle: { x: -650, y: -200 },
     forkPause: { x: 308, y: 83 },
     straightHit: { x: 960, y: 298 },
     divertedHit: { x: 1060, y: 35 },
-    straightExit: { x: 2400, y: 770 },
-    divertedExit: { x: 2400, y: 290 },
+    straightExit: { x: 2600, y: 750 },
+    divertedExit: { x: 2600, y: 315 },
   },
   motionPaths: {
-    approach: 'M -280 -108 L 308 83',
-    straight: 'M 308 83 L 960 298 L 2400 770',
-    diverted: 'M 308 83 C 450 110 650 150 820 100 C 950 55 1020 35 1060 35 L 2400 290',
+    approach: 'M -650 -200 L 308 83',
+    straight: 'M 308 83 L 960 298 L 2600 750',
+    diverted: 'M 308 83 C 450 110 650 150 820 100 C 950 55 1020 35 1060 35 L 2600 315',
   },
 };
 

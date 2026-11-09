@@ -150,17 +150,13 @@ export default function HomePage() {
     }
   }, []);
 
-  const handleSkipAnimation = useCallback(() => {
-    setAnimationComplete(true);
-    setPhase('result');
-  }, []);
-
-  // Handle Revote: reset experiment to decision-pause so participant can choose again
+  // Handle Revote: restart trolley from the very beginning of the track
   const handleRevote = useCallback(() => {
-    setPhase('decision-pause');
+    setSelectedChoice(null);
     setSubmissionState('idle');
     setAnimationComplete(false);
     setErrorMessage(null);
+    setPhase('intro-animation');
   }, []);
 
   const isCompleted = phase === 'result' && selectedChoice !== null;
@@ -215,7 +211,6 @@ export default function HomePage() {
           animationComplete={animationComplete}
           onPhaseChange={handlePhaseChange}
           onStartExperiment={handleStartExperiment}
-          onSkipAnimation={handleSkipAnimation}
           onAnimationEnd={() => {
             setAnimationComplete(true);
             setPhase('result');

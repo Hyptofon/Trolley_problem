@@ -11,7 +11,7 @@ import { SwitchOperator } from './SwitchOperator';
 import { TrackCharacters } from './TrackCharacters';
 import { TrolleyVehicle } from './TrolleyVehicle';
 import { SCENE_CONFIG } from './nealAssets';
-import { Play, FastForward, AlertTriangle } from 'lucide-react';
+import { Play, AlertTriangle } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(MotionPathPlugin);
@@ -25,7 +25,6 @@ export interface TrolleySceneProps {
   onPhaseChange?: (phase: ExperimentPhase) => void;
   onStartExperiment?: () => void;
   onAnimationEnd?: () => void;
-  onSkipAnimation?: () => void;
   reducedMotion?: boolean;
 }
 
@@ -36,7 +35,6 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
   animationComplete = false,
   onPhaseChange,
   onStartExperiment,
-  onSkipAnimation,
   onAnimationEnd,
   reducedMotion = false,
 }) => {
@@ -160,7 +158,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
       activeTweenRef.current = gsap.to(progressObj, {
         progress: 1,
-        duration: 1.8,
+        duration: 2.3,
         ease: 'power2.out',
         onUpdate: () => {
           const pt = MotionPathPlugin.getPositionOnPath(rawPath, progressObj.progress, true);
@@ -223,8 +221,8 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
       const progressObj = { progress: 0 };
       let impacted = false;
 
-      // Collision occurs at ~0.31 along straight path and ~0.37 along diverted curve
-      const impactThreshold = isSwitch ? 0.37 : 0.31;
+      // Collision occurs at ~0.29 along straight path and ~0.34 along diverted curve
+      const impactThreshold = isSwitch ? 0.34 : 0.29;
 
       activeTweenRef.current = gsap.to(progressObj, {
         progress: 1,
@@ -412,20 +410,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
         </div>
       )}
 
-      {/* Skip animation button */}
-      {isMoving && !reducedMotion && (
-        <div className="absolute bottom-4 right-4 z-20">
-          <button
-            type="button"
-            onClick={onSkipAnimation}
-            className="btn-ghost-pill text-xs uppercase tracking-[0.15em] py-2 px-5 bg-paper/80 backdrop-blur-sm"
-            aria-label="Пропустити анімацію"
-          >
-            <FastForward className="w-3.5 h-3.5 mr-1.5" />
-            Пропустити анімацію
-          </button>
-        </div>
-      )}
+
     </div>
   );
 };
