@@ -44,8 +44,8 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
   const {
     playImpact,
     playLeverPull,
-    playTrolleyRoll,
-    stopTrolleyRoll,
+    startTicking,
+    stopTicking,
     startAmbientMusic,
   } = useSound();
 
@@ -78,6 +78,24 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
   // Track active animation tween to allow clean cancellation
   const activeTweenRef = useRef<gsap.core.Tween | null>(null);
+
+  // Manage continuous ticking sound lifecycle:
+  // Active constantly during intro approach and decision pause to create a tense scene,
+  // and stops as soon as a choice is made (switching / outcome / result / idle).
+  useEffect(() => {
+    if (currentPhase === 'intro-animation' || currentPhase === 'decision-pause') {
+      startAmbientMusic();
+      startTicking();
+    } else {
+      stopTicking();
+    }
+
+    return () => {
+      if (currentPhase === 'intro-animation' || currentPhase === 'decision-pause') {
+        stopTicking();
+      }
+    };
+  }, [currentPhase, startAmbientMusic, startTicking, stopTicking]);
 
   // Unified GSAP MotionPath animation coordinator
   useEffect(() => {
@@ -151,8 +169,6 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
     // 2. Intro Animation Phase: Glides along approach path to fork pause point
     if (currentPhase === 'intro-animation') {
       setHasImpacted(false);
-      startAmbientMusic();
-      playTrolleyRoll();
       const rawPath = MotionPathPlugin.stringToRawPath(SCENE_CONFIG.motionPaths.approach);
       const progressObj = { progress: 0 };
 
@@ -165,7 +181,7 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
           setTrolleyPos({ x: pt.x, y: pt.y, angle: 0 });
         },
         onComplete: () => {
-          stopTrolleyRoll();
+          // Keep ticking continuous into decision pause
           setTrolleyPos({
             x: SCENE_CONFIG.trolleyPositions.forkPause.x,
             y: SCENE_CONFIG.trolleyPositions.forkPause.y,
@@ -176,14 +192,12 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
       });
 
       return () => {
-        stopTrolleyRoll();
         if (activeTweenRef.current) activeTweenRef.current.kill();
       };
     }
 
     // 3. Decision Pause: Trolley holds steady at fork pause position
     if (currentPhase === 'decision-pause') {
-      stopTrolleyRoll();
       setTrolleyPos({
         x: SCENE_CONFIG.trolleyPositions.forkPause.x,
         y: SCENE_CONFIG.trolleyPositions.forkPause.y,
@@ -195,7 +209,6 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
     // 4. Switching Phase: Operator moves lever, switch blade shifts
     if (currentPhase === 'switching') {
-      stopTrolleyRoll();
       if (selectedChoice === 'switch') {
         playLeverPull();
       }
@@ -212,7 +225,6 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
 
     // 5. Outcome Animation Phase: GSAP MotionPath travel along chosen route with authentic collision
     if (currentPhase === 'outcome-animation') {
-      playTrolleyRoll();
       const isSwitch = selectedChoice === 'switch';
       const pathStr = isSwitch
         ? SCENE_CONFIG.motionPaths.diverted
@@ -248,14 +260,12 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
           }
         },
         onComplete: () => {
-          stopTrolleyRoll();
           if (onAnimationEnd) onAnimationEnd();
           if (onPhaseChange) onPhaseChange('result');
         },
       });
 
       return () => {
-        stopTrolleyRoll();
         if (activeTweenRef.current) activeTweenRef.current.kill();
       };
     }
@@ -285,9 +295,6 @@ export const TrolleyScene: React.FC<TrolleySceneProps> = ({
     onPhaseChange,
     playImpact,
     playLeverPull,
-    playTrolleyRoll,
-    stopTrolleyRoll,
-    startAmbientMusic,
   ]);
 
   const isMoving =

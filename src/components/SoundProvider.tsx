@@ -10,13 +10,25 @@ import React, {
 } from 'react';
 
 interface SoundContextType {
+  // Sound effects (SFX) toggle
   soundEnabled: boolean;
   toggleSound: () => void;
   setSoundEnabled: (enabled: boolean) => void;
+
+  // Background Ambient Music toggle
+  musicEnabled: boolean;
+  toggleMusic: () => void;
+  setMusicEnabled: (enabled: boolean) => void;
+
+  // Sound effects
   playImpact: () => void;
   playLeverPull: () => void;
+  startTicking: () => void;
+  stopTicking: () => void;
   playTrolleyRoll: () => void;
   stopTrolleyRoll: () => void;
+
+  // Ambient music
   startAmbientMusic: () => void;
   stopAmbientMusic: () => void;
 }
@@ -25,8 +37,13 @@ const SoundContext = createContext<SoundContextType>({
   soundEnabled: true,
   toggleSound: () => {},
   setSoundEnabled: () => {},
+  musicEnabled: true,
+  toggleMusic: () => {},
+  setMusicEnabled: () => {},
   playImpact: () => {},
   playLeverPull: () => {},
+  startTicking: () => {},
+  stopTicking: () => {},
   playTrolleyRoll: () => {},
   stopTrolleyRoll: () => {},
   startAmbientMusic: () => {},
@@ -39,6 +56,10 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [soundEnabled, setSoundEnabledState] = useState<boolean>(true);
+  const [musicEnabled, setMusicEnabledState] = useState<boolean>(true);
+
+  const soundEnabledRef = useRef<boolean>(true);
+  const musicEnabledRef = useRef<boolean>(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   // Background Ambient Music nodes
@@ -46,7 +67,8 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
   const musicOscsRef = useRef<OscillatorNode[]>([]);
   const isMusicPlayingRef = useRef<boolean>(false);
 
-  // Trolley Roll interval
+  // Trolley Ticking / Clatter interval
+  const isTickingActiveRef = useRef<boolean>(false);
   const rollIntervalRef = useRef<number | null>(null);
 
   // Safe AudioContext getter
@@ -67,51 +89,42 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
     return audioCtxRef.current;
   }, []);
 
-  // Initialize preference from localStorage
+  // Initialize preferences from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('trolley-sound-enabled');
-      if (stored !== null) {
-        setSoundEnabledState(stored === 'true');
+      const storedSound = localStorage.getItem('trolley-sound-enabled');
+      if (storedSound !== null) {
+        const val = storedSound === 'true';
+        setSoundEnabledState(val);
+        soundEnabledRef.current = val;
+      }
+
+      const storedMusic = localStorage.getItem('trolley-music-enabled');
+      if (storedMusic !== null) {
+        const val = storedMusic === 'true';
+        setMusicEnabledState(val);
+        musicEnabledRef.current = val;
       }
     } catch {}
   }, []);
 
-  // Toggle Sound On/Off
-  const setSoundEnabled = useCallback((enabled: boolean) => {
-    setSoundEnabledState(enabled);
-    try {
-      localStorage.setItem('trolley-sound-enabled', String(enabled));
-    } catch {}
-
-    if (!enabled) {
-      if (musicGainRef.current && audioCtxRef.current) {
-        musicGainRef.current.gain.setTargetAtTime(
-          0,
-          audioCtxRef.current.currentTime,
-          0.1
-        );
+  // Resume audio context on any user interaction across the window
+  useEffect(() => {
+    const unlockAudio = () => {
+      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume().catch(() => {});
       }
-    } else {
-      if (musicGainRef.current && audioCtxRef.current) {
-        musicGainRef.current.gain.setTargetAtTime(
-          0.12,
-          audioCtxRef.current.currentTime,
-          0.3
-        );
-      }
-    }
+    };
+    window.addEventListener('pointerdown', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+    };
   }, []);
 
-  const toggleSound = useCallback(() => {
-    // Resume audio context on user action
-    getAudioContext();
-    setSoundEnabled(!soundEnabled);
-  }, [soundEnabled, setSoundEnabled, getAudioContext]);
-
-  // 1. Ambient Background Music (Cinematic Low D Minor Breathing Drone)
+  // 1. Ambient Background Music (Cinematic Low D Minor Breathing Drone - Louder volume: 0.32)
   const startAmbientMusic = useCallback(() => {
-    if (!soundEnabled) return;
     const ctx = getAudioContext();
     if (!ctx || isMusicPlayingRef.current) return;
 
@@ -120,16 +133,17 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
       const now = ctx.currentTime;
 
       const masterGain = ctx.createGain();
+      const targetGain = musicEnabledRef.current ? 0.32 : 0.0001;
       masterGain.gain.setValueAtTime(0.0001, now);
-      masterGain.gain.linearRampToValueAtTime(0.12, now + 1.8);
+      masterGain.gain.linearRampToValueAtTime(targetGain, now + 1.8);
       masterGain.connect(ctx.destination);
       musicGainRef.current = masterGain;
 
-      // Filter: Resonant Lowpass
+      // Filter: Resonant Lowpass (360Hz cutoff for richer presence)
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(280, now);
-      filter.Q.setValueAtTime(2.2, now);
+      filter.frequency.setValueAtTime(360, now);
+      filter.Q.setValueAtTime(2.4, now);
       filter.connect(masterGain);
 
       // Filter LFO: Slow breathing modulation
@@ -137,7 +151,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
       const lfoGain = ctx.createGain();
       lfo.type = 'sine';
       lfo.frequency.setValueAtTime(0.09, now); // 11-second breath
-      lfoGain.gain.setValueAtTime(140, now);
+      lfoGain.gain.setValueAtTime(160, now);
       lfo.connect(lfoGain);
       lfoGain.connect(filter.frequency);
       lfo.start(now);
@@ -155,7 +169,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
         // Micro detune for lush thickness
         osc.detune.setValueAtTime((idx - 1.5) * 5, now);
 
-        const vol = idx === 0 ? 0.35 : idx === 1 ? 0.25 : 0.18;
+        const vol = idx === 0 ? 0.45 : idx === 1 ? 0.35 : 0.28;
         oscGain.gain.setValueAtTime(vol, now);
 
         osc.connect(oscGain);
@@ -168,7 +182,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch {
       isMusicPlayingRef.current = false;
     }
-  }, [soundEnabled, getAudioContext]);
+  }, [getAudioContext]);
 
   const stopAmbientMusic = useCallback(() => {
     if (!isMusicPlayingRef.current || !audioCtxRef.current) return;
@@ -193,9 +207,130 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // 2. Lever Pull Sound Effect (Mechanical heavy click)
+  // Music toggle control
+  const setMusicEnabled = useCallback(
+    (enabled: boolean) => {
+      setMusicEnabledState(enabled);
+      musicEnabledRef.current = enabled;
+      try {
+        localStorage.setItem('trolley-music-enabled', String(enabled));
+      } catch {}
+
+      if (!audioCtxRef.current || !musicGainRef.current) {
+        if (enabled && !isMusicPlayingRef.current) {
+          startAmbientMusic();
+        }
+        return;
+      }
+
+      const ctx = audioCtxRef.current;
+      if (enabled) {
+        musicGainRef.current.gain.setTargetAtTime(0.32, ctx.currentTime, 0.25);
+      } else {
+        musicGainRef.current.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.1);
+      }
+    },
+    [startAmbientMusic]
+  );
+
+  const toggleMusic = useCallback(() => {
+    getAudioContext();
+    setMusicEnabled(!musicEnabledRef.current);
+  }, [getAudioContext, setMusicEnabled]);
+
+  // 2. Trolley Wheel Clatter / Ticking Sound (Rhythmic track travel sound)
+  const startTicking = useCallback(() => {
+    isTickingActiveRef.current = true;
+    if (!soundEnabledRef.current) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    if (rollIntervalRef.current) {
+      clearInterval(rollIntervalRef.current);
+      rollIntervalRef.current = null;
+    }
+
+    const clickClack = () => {
+      if (!soundEnabledRef.current || !audioCtxRef.current) return;
+      const c = audioCtxRef.current;
+      const t = c.currentTime;
+
+      // Wheel rail bump 1
+      const osc1 = c.createOscillator();
+      const g1 = c.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(120, t);
+      osc1.frequency.exponentialRampToValueAtTime(45, t + 0.05);
+      g1.gain.setValueAtTime(0.18, t);
+      g1.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+      osc1.connect(g1);
+      g1.connect(c.destination);
+      osc1.start(t);
+      osc1.stop(t + 0.06);
+
+      // Wheel rail bump 2 (syncopated)
+      const osc2 = c.createOscillator();
+      const g2 = c.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(140, t + 0.07);
+      osc2.frequency.exponentialRampToValueAtTime(50, t + 0.12);
+      g2.gain.setValueAtTime(0.14, t + 0.07);
+      g2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      osc2.connect(g2);
+      g2.connect(c.destination);
+      osc2.start(t + 0.07);
+      osc2.stop(t + 0.13);
+    };
+
+    clickClack();
+    rollIntervalRef.current = window.setInterval(clickClack, 340);
+  }, [getAudioContext]);
+
+  const stopTicking = useCallback(() => {
+    isTickingActiveRef.current = false;
+    if (rollIntervalRef.current) {
+      clearInterval(rollIntervalRef.current);
+      rollIntervalRef.current = null;
+    }
+  }, []);
+
+  // Backward compatible aliases
+  const playTrolleyRoll = startTicking;
+  const stopTrolleyRoll = stopTicking;
+
+  // Sound effects toggle control
+  const setSoundEnabled = useCallback(
+    (enabled: boolean) => {
+      setSoundEnabledState(enabled);
+      soundEnabledRef.current = enabled;
+      try {
+        localStorage.setItem('trolley-sound-enabled', String(enabled));
+      } catch {}
+
+      if (!enabled) {
+        // Immediately silence ticking if active
+        if (rollIntervalRef.current) {
+          clearInterval(rollIntervalRef.current);
+          rollIntervalRef.current = null;
+        }
+      } else {
+        // If scene is currently waiting in intro or pause, resume ticking
+        if (isTickingActiveRef.current && !rollIntervalRef.current) {
+          startTicking();
+        }
+      }
+    },
+    [startTicking]
+  );
+
+  const toggleSound = useCallback(() => {
+    getAudioContext();
+    setSoundEnabled(!soundEnabledRef.current);
+  }, [getAudioContext, setSoundEnabled]);
+
+  // 3. Lever Pull Sound Effect (Mechanical heavy click)
   const playLeverPull = useCallback(() => {
-    if (!soundEnabled) return;
+    if (!soundEnabledRef.current) return;
     const ctx = getAudioContext();
     if (!ctx) return;
 
@@ -234,64 +369,11 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
       thud.start(now + 0.04);
       thud.stop(now + 0.19);
     } catch {}
-  }, [soundEnabled, getAudioContext]);
+  }, [getAudioContext]);
 
-  // 3. Trolley Wheel Clatter Sound (Rhythmic track travel sound)
-  const playTrolleyRoll = useCallback(() => {
-    if (!soundEnabled) return;
-    const ctx = getAudioContext();
-    if (!ctx) return;
-
-    if (rollIntervalRef.current) {
-      clearInterval(rollIntervalRef.current);
-    }
-
-    const clickClack = () => {
-      if (!soundEnabled || !audioCtxRef.current) return;
-      const c = audioCtxRef.current;
-      const t = c.currentTime;
-
-      // Wheel rail bump 1
-      const osc1 = c.createOscillator();
-      const g1 = c.createGain();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(120, t);
-      osc1.frequency.exponentialRampToValueAtTime(45, t + 0.05);
-      g1.gain.setValueAtTime(0.18, t);
-      g1.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-      osc1.connect(g1);
-      g1.connect(c.destination);
-      osc1.start(t);
-      osc1.stop(t + 0.06);
-
-      // Wheel rail bump 2 (syncopated)
-      const osc2 = c.createOscillator();
-      const g2 = c.createGain();
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(140, t + 0.07);
-      osc2.frequency.exponentialRampToValueAtTime(50, t + 0.12);
-      g2.gain.setValueAtTime(0.14, t + 0.07);
-      g2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-      osc2.connect(g2);
-      g2.connect(c.destination);
-      osc2.start(t + 0.07);
-      osc2.stop(t + 0.13);
-    };
-
-    clickClack();
-    rollIntervalRef.current = window.setInterval(clickClack, 340);
-  }, [soundEnabled, getAudioContext]);
-
-  const stopTrolleyRoll = useCallback(() => {
-    if (rollIntervalRef.current) {
-      clearInterval(rollIntervalRef.current);
-      rollIntervalRef.current = null;
-    }
-  }, []);
-
-  // 4. Dramatic Collision Impact Sound (Sub-bass thud + comic splat + metal ring)
+  // 4. Dramatic Collision Impact Sound (Sub-bass thud + comic splat + metal ring - "коли давлять")
   const playImpact = useCallback(() => {
-    if (!soundEnabled) return;
+    if (!soundEnabledRef.current) return;
     const ctx = getAudioContext();
     if (!ctx) return;
 
@@ -356,18 +438,18 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
       metal.start(now + 0.02);
       metal.stop(now + 0.56);
     } catch {}
-  }, [soundEnabled, getAudioContext]);
+  }, [getAudioContext]);
 
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      stopTrolleyRoll();
+      stopTicking();
       stopAmbientMusic();
       if (audioCtxRef.current) {
         audioCtxRef.current.close().catch(() => {});
       }
     };
-  }, [stopTrolleyRoll, stopAmbientMusic]);
+  }, [stopTicking, stopAmbientMusic]);
 
   return (
     <SoundContext.Provider
@@ -375,8 +457,13 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
         soundEnabled,
         toggleSound,
         setSoundEnabled,
+        musicEnabled,
+        toggleMusic,
+        setMusicEnabled,
         playImpact,
         playLeverPull,
+        startTicking,
+        stopTicking,
         playTrolleyRoll,
         stopTrolleyRoll,
         startAmbientMusic,
@@ -387,4 +474,3 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
     </SoundContext.Provider>
   );
 };
-

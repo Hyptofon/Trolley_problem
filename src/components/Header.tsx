@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
 import { SoundToggle } from './SoundToggle';
+import { MusicToggle } from './MusicToggle';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
@@ -12,7 +13,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className="w-full h-[66px] border-b border-obsidian/10 bg-paper/95 backdrop-blur-sm sticky top-0 z-40 transition-colors duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]">
-      <div className="w-full px-6 sm:px-12 md:px-16 h-full flex items-center justify-between">
+      <div className="w-full px-4 sm:px-8 md:px-16 h-full flex items-center justify-between">
         {/* Wordmark Logo */}
         <Link
           href="/"
@@ -29,18 +30,21 @@ export const Header: React.FC = () => {
           </div>
         </Link>
 
-        {/* Minimal Navigation & Theme Switcher */}
-        <nav aria-label="Головна навігація" className="flex items-center gap-4 sm:gap-6">
+        {/* Minimal Navigation & Audio / Theme Controls */}
+        <nav aria-label="Головна навігація" className="flex items-center gap-2 sm:gap-4 md:gap-5">
           {isAdmin && (
             <Link
               href="/"
-              className="text-xs uppercase tracking-[0.2em] text-obsidian hover:text-felt-gray transition-colors font-normal"
+              className="text-xs uppercase tracking-[0.2em] text-obsidian hover:text-felt-gray transition-colors font-normal mr-2"
             >
               ← До дилеми
             </Link>
           )}
 
-          {/* Sound & Music Toggle */}
+          {/* Ambient Music Toggle */}
+          <MusicToggle />
+
+          {/* Sound Effects Toggle (Ticking, Lever, Collision) */}
           <SoundToggle />
 
           {/* Theme Toggle (Light / Dark) */}
