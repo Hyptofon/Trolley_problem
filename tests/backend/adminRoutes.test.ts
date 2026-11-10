@@ -94,6 +94,17 @@ describe('Admin Route Handlers Integration', () => {
       expect(json.error.code).toBe('INVALID_CREDENTIALS');
     });
 
+    it('returns 500 diagnostic error when ADMIN_PASSWORD_HASH was truncated by unescaped "$" in .env', async () => {
+      process.env.ADMIN_PASSWORD_HASH = '16384:8:1';
+      const req = createRequest('/api/admin/login', 'POST', {
+        body: { password: TEST_PASSWORD },
+      });
+      const res = await loginPost(req);
+      expect(res.status).toBe(500);
+      const json = await res.json();
+      expect(json.error.message).toContain('$');
+    });
+
     it('returns 200 and sets HttpOnly cookie on valid password', async () => {
       const req = createRequest('/api/admin/login', 'POST', {
         body: { password: TEST_PASSWORD },

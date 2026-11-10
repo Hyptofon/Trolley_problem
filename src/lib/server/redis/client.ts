@@ -130,8 +130,14 @@ export class InMemoryRedisAdapter implements IRedisClient {
   }
 }
 
-// Global in-memory instance for testing / demo
-const globalInMemoryAdapter = new InMemoryRedisAdapter();
+// Persist in-memory store across Next.js dev route reloads and route module boundaries
+const globalForInMemoryRedis = globalThis as unknown as {
+  __trolleyInMemoryAdapter?: InMemoryRedisAdapter;
+};
+
+const globalInMemoryAdapter =
+  globalForInMemoryRedis.__trolleyInMemoryAdapter ??
+  (globalForInMemoryRedis.__trolleyInMemoryAdapter = new InMemoryRedisAdapter());
 
 let cachedClient: IRedisClient | null = null;
 

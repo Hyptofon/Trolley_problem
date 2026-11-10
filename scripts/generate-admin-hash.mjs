@@ -31,7 +31,8 @@ export function hashPassword(password) {
     p: SCRYPT_PARAMS.p,
   }).toString('hex');
 
-  return `${SCRYPT_PARAMS.N}:${SCRYPT_PARAMS.r}:${SCRYPT_PARAMS.p}$${salt}$${derivedKey}`;
+  // Use ":" delimiters so Next.js dotenv-expand never interprets "$" as env interpolation in .env files
+  return `${SCRYPT_PARAMS.N}:${SCRYPT_PARAMS.r}:${SCRYPT_PARAMS.p}:${salt}:${derivedKey}`;
 }
 
 export function verifyPasswordScrypt(providedPassword, storedHash) {
@@ -39,13 +40,22 @@ export function verifyPasswordScrypt(providedPassword, storedHash) {
     return false;
   }
 
-  const parts = storedHash.split('$');
-  if (parts.length !== 3) {
+  let N, r, p, salt, expectedKeyHex;
+  const dollarParts = storedHash.split('$');
+  const colonParts = storedHash.split(':');
+
+  if (dollarParts.length === 3) {
+    const [paramsStr, s, key] = dollarParts;
+    [N, r, p] = paramsStr.split(':').map(Number);
+    salt = s;
+    expectedKeyHex = key;
+  } else if (colonParts.length === 5) {
+    [N, r, p] = colonParts.slice(0, 3).map(Number);
+    salt = colonParts[3];
+    expectedKeyHex = colonParts[4];
+  } else {
     return false;
   }
-
-  const [paramsStr, salt, expectedKeyHex] = parts;
-  const [N, r, p] = paramsStr.split(':').map(Number);
 
   if (!N || !r || !p || !salt || !expectedKeyHex) {
     return false;

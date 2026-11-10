@@ -35,6 +35,14 @@ export async function authenticateAdmin(password: string): Promise<string> {
     );
   }
 
+  // Guard against Next.js dotenv-expand truncating unescaped `$salt$key` values to just `16384:8:1`.
+  if (/^\d+:\d+:\d+$/.test(env.adminPasswordHash.trim())) {
+    throw new ServerConfigurationError(
+      'ADMIN_PASSWORD_HASH обрізано через символ "$" у .env. Використовуйте формат через ":" (npm run generate-hash) або екрануйте "$" як "\\$".',
+      'ADMIN_HASH_TRUNCATED'
+    );
+  }
+
   const isMatch = verifyAdminPassword(password, env.adminPasswordHash);
   if (!isMatch) {
     throw new AdminAuthError('Невірний пароль адміністратора.', 'INVALID_CREDENTIALS', 401);

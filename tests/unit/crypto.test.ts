@@ -51,9 +51,18 @@ describe('Server Crypto Utilities', () => {
       expect(verifyAdminPassword('WrongPassword123!', hash)).toBe(false);
     });
 
+    it('verifies dotenv-safe colon-delimited scrypt hashes', () => {
+      const password = 'SuperSecretAdminPassword2026!';
+      const colonHash = hashAdminPassword(password).replace(/\$/g, ':');
+
+      expect(verifyAdminPassword(password, colonHash)).toBe(true);
+      expect(verifyAdminPassword('WrongPassword!', colonHash)).toBe(false);
+    });
+
     it('rejects malformed hashes gracefully', () => {
       expect(verifyAdminPassword('any', 'not-a-valid-hash')).toBe(false);
       expect(verifyAdminPassword('any', '16384:8:1$salt')).toBe(false);
+      expect(verifyAdminPassword('any', '16384:8:1')).toBe(false);
       expect(verifyAdminPassword('any', '')).toBe(false);
     });
 

@@ -40,7 +40,47 @@ export function hashAdminPassword(password: string): string {
 }
 
 /**
+ * Parses either "$" delimited (`N:r:p$salt$key`) or dotenv-safe ":" delimited (`N:r:p:salt:key`) scrypt hashes.
+ */
+function parseScryptHash(storedHash: string): {
+  N: number;
+  r: number;
+  p: number;
+  salt: string;
+  expectedKeyHex: string;
+} | null {
+  let N: number;
+  let r: number;
+  let p: number;
+  let salt: string;
+  let expectedKeyHex: string;
+
+  const dollarParts = storedHash.split('$');
+  const colonParts = storedHash.split(':');
+
+  if (dollarParts.length === 3) {
+    const [paramsStr, s, key] = dollarParts;
+    [N, r, p] = paramsStr.split(':').map(Number);
+    salt = s;
+    expectedKeyHex = key;
+  } else if (colonParts.length === 5) {
+    [N, r, p] = colonParts.slice(0, 3).map(Number);
+    salt = colonParts[3];
+    expectedKeyHex = colonParts[4];
+  } else {
+    return null;
+  }
+
+  if (!N || !r || !p || !salt || !expectedKeyHex) {
+    return null;
+  }
+
+  return { N, r, p, salt, expectedKeyHex };
+}
+
+/**
  * Verifies password against stored salted scrypt hash.
+ * Supports both `$`-delimited hashes and dotenv-safe `:`-delimited hashes.
  * Uses crypto.timingSafeEqual to prevent timing attacks.
  */
 export function verifyAdminPassword(
@@ -55,25 +95,22 @@ export function verifyAdminPassword(
     return false;
   }
 
-  const parts = storedHash.split('$');
-  if (parts.length !== 3) {
-    return false;
-  }
-
-  const [paramsStr, salt, expectedKeyHex] = parts;
-  const [N, r, p] = paramsStr.split(':').map(Number);
-
-  if (!N || !r || !p || !salt || !expectedKeyHex) {
+  const parsed = parseScryptHash(storedHash.trim());
+  if (!parsed) {
     return false;
   }
 
   try {
-    const expectedBuffer = Buffer.from(expectedKeyHex, 'hex');
+    const expectedBuffer = Buffer.from(parsed.expectedKeyHex, 'hex');
+    if (expectedBuffer.length === 0) {
+      return false;
+    }
+
     const derivedKey = crypto.scryptSync(
       providedPassword.normalize('NFKC'),
-      salt,
+      parsed.salt,
       expectedBuffer.length,
-      { N, r, p }
+      { N: parsed.N, r: parsed.r, p: parsed.p }
     );
 
     if (derivedKey.length !== expectedBuffer.length) {
