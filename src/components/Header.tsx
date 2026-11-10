@@ -38,9 +38,10 @@ export const Header: React.FC = () => {
           {isAdmin && (
             <Link
               href="/"
-              className="text-xs uppercase tracking-[0.2em] text-obsidian hover:text-felt-gray transition-colors font-normal mr-2"
+              className="text-xs uppercase tracking-[0.12em] sm:tracking-[0.2em] text-obsidian hover:text-felt-gray transition-colors font-normal mr-1 sm:mr-2 whitespace-nowrap"
             >
-              ← До дилеми
+              <span className="sm:hidden">← Назад</span>
+              <span className="hidden sm:inline">← До дилеми</span>
             </Link>
           )}
 
