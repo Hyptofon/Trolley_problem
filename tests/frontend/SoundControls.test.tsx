@@ -47,6 +47,8 @@ describe('Sound & Music Independent Audio Controls', () => {
 
     expect(musicBtn).toBeInTheDocument();
     expect(soundBtn).toBeInTheDocument();
+    expect(musicBtn).toHaveAccessibleName(/Музика/);
+    expect(soundBtn).toHaveAccessibleName(/Звук/);
     expect(screen.getByTestId('sound-state')).toHaveTextContent('sound-on');
     expect(screen.getByTestId('music-state')).toHaveTextContent('music-on');
   });
